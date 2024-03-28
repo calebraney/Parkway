@@ -1,4 +1,5 @@
 import { CountUp } from 'countup.js';
+import { attr, checkBreakpoints } from '../utilities';
 
 export const countUp = function (gsapContext) {
   //animation ID

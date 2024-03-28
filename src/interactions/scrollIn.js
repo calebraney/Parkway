@@ -1,4 +1,4 @@
-import { attr, checkBreakpoints } from '../utilities';
+import { attr, checkBreakpoints, runSplit } from '../utilities';
 
 export const scrollIn = function (gsapContext) {
   //resuable timeline creation with option attributes for individual customization per element

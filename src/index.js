@@ -1,5 +1,6 @@
 import { attr, runSplit } from './utilities';
 import { hoverActive } from './interactions/hoverActive';
+import { countUp } from './interactions/countUp';
 import { mouseOver } from './interactions/mouseOver';
 import { parallax } from './interactions/parallax';
 import { scrollIn } from './interactions/scrollIn';
@@ -75,12 +76,15 @@ document.addEventListener('DOMContentLoaded', function () {
       },
       (gsapContext) => {
         let { isMobile, isTablet, isDesktop, reduceMotion } = gsapContext.conditions;
-        // control animations in specific webflow instances
+        // Resuable Animations
         hoverActive(gsapContext);
         mouseOver(gsapContext);
         parallax(gsapContext);
-        scrollIn(gsapContext);
-        scrolling(gsapContext);
+        // scrollIn(gsapContext);
+        // scrolling(gsapContext);
+        countUp(gsapContext);
+        //Custom Animations
+        missionText();
         //or control animations globally in match media
         if (!reduceMotion) {
         }
