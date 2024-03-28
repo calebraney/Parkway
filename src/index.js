@@ -1,5 +1,9 @@
 import { attr } from './utilities';
 import { hoverActive } from './interactions/hoverActive';
+import { mouseOver } from './interactions/mouseOver';
+import { parallax } from './interactions/parallax';
+import { scrollIn } from './interactions/scrollIn';
+import { scrolling } from './interactions/scrolling';
 
 document.addEventListener('DOMContentLoaded', function () {
   // Comment out for production
@@ -33,6 +37,10 @@ document.addEventListener('DOMContentLoaded', function () {
         let { isMobile, isTablet, isDesktop, reduceMotion } = gsapContext.conditions;
         // control animations in specific webflow instances
         hoverActive(gsapContext);
+        mouseOver(gsapContext);
+        parallax(gsapContext);
+        scrollIn(gsapContext);
+        scrolling(gsapContext);
         //or control animations globally in match media
         if (!reduceMotion) {
         }
