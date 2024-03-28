@@ -132,6 +132,47 @@ export const scrollIn = function (gsapContext) {
       );
     });
   };
+  const scrollInLine = function (gsapContext) {
+    //animation ID
+    const ANIMATION_ID = 'scrollin';
+    // elements
+    const SCROLLIN_LINE = '[data-ix-scrollin="line"]';
+    //options
+    const SCROLLIN_DIRECTION = 'data-ix-scrollin-direction';
+
+    const items = gsap.utils.toArray(SCROLLIN_LINE);
+    items.forEach((item) => {
+      if (!item) return;
+      //check breakpoints and quit function if set on specific breakpoints
+      let runOnBreakpoint = checkBreakpoints(item, ANIMATION_ID, gsapContext);
+      if (runOnBreakpoint === false) return;
+      const direction = attr('left', item.getAttribute(SCROLLIN_DIRECTION));
+      //set clip path directions
+      let clipStart = 'polygon(0% 0%, 0% 0%, 0% 100%, 0% 100%)';
+      //if direction is right change clip start
+      if (direction === 'right') {
+        clipStart = 'polygon(100% 0%, 100% 0%, 100% 100%, 100% 100%)';
+      }
+      if (direction === 'top') {
+        clipStart = 'polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)';
+      }
+      if (direction === 'bottom') {
+        clipStart = 'polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)';
+      }
+      let clipEnd = 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)';
+      //create timeline
+      const tl = scrollInTL(item);
+      tl.fromTo(
+        item,
+        {
+          clipPath: clipStart,
+        },
+        {
+          clipPath: clipEnd,
+        }
+      );
+    });
+  };
 
   const scrollInContainer = function (gsapContext) {
     //animation ID
@@ -197,4 +238,5 @@ export const scrollIn = function (gsapContext) {
   scrollInImage();
   scrollInContainer();
   scrollInStagger();
+  scrollInLine();
 };

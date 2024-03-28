@@ -1,4 +1,4 @@
-import { attr } from './utilities';
+import { attr, runSplit } from './utilities';
 import { hoverActive } from './interactions/hoverActive';
 import { mouseOver } from './interactions/mouseOver';
 import { parallax } from './interactions/parallax';
@@ -19,7 +19,47 @@ document.addEventListener('DOMContentLoaded', function () {
 
   //////////////////////////////
   //Global Variables
-  const resetScrollTriggers = document.querySelectorAll('[data-ix-reset]');
+  const missionText = function () {
+    const WRAP = '[data-ix-mission="wrap"]';
+    const TEXT = '[data-ix-mission="text"]';
+    const SPAN = '[data-ix-mission="span"]';
+    const ACTIVE_CLASS = 'is-active';
+
+    const wrap = document.querySelector(WRAP);
+    const text = document.querySelector(TEXT);
+    const span = document.querySelector(SPAN);
+    if (!wrap || !text || !span) return;
+    //split the text
+    const splitText = runSplit(text);
+    if (!splitText) return;
+    //remove active class
+
+    const tl = gsap.timeline({
+      defaults: {
+        duration: 0.6,
+        ease: 'power1.out',
+      },
+      scrollTrigger: {
+        trigger: wrap,
+        start: 'top 80%',
+        end: 'bottom 80%',
+        scrub: 1,
+      },
+    });
+    tl.fromTo(
+      splitText.words,
+      {
+        opacity: 0.2,
+      },
+      {
+        opacity: 1,
+        stagger: { each: 0.2, from: 'start' },
+        onComplete: () => {
+          span.classList.add(ACTIVE_CLASS);
+        },
+      }
+    );
+  };
 
   //////////////////////////////
   //Control Functions on page load
@@ -49,6 +89,7 @@ document.addEventListener('DOMContentLoaded', function () {
   };
   gsapInit();
 
+  const resetScrollTriggers = document.querySelectorAll('[data-ix-reset]');
   //reset gsap on click of reset triggers
   resetScrollTriggers.forEach(function (item) {
     item.addEventListener('click', function (e) {
