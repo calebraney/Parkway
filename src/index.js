@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const splitText = runSplit(text);
     if (!splitText) return;
     //remove active class
+    span.classList.remove(ACTIVE_CLASS);
 
     const tl = gsap.timeline({
       defaults: {
@@ -43,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function () {
       scrollTrigger: {
         trigger: wrap,
         start: 'top 80%',
-        end: 'bottom 80%',
+        end: 'bottom 90%',
         scrub: 1,
       },
     });
@@ -80,8 +81,8 @@ document.addEventListener('DOMContentLoaded', function () {
         hoverActive(gsapContext);
         mouseOver(gsapContext);
         parallax(gsapContext);
-        // scrollIn(gsapContext);
-        // scrolling(gsapContext);
+        scrollIn(gsapContext);
+        scrolling(gsapContext);
         countUp(gsapContext);
         //Custom Animations
         missionText();

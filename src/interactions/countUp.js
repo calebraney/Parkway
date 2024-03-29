@@ -28,6 +28,7 @@ export const countUp = function (gsapContext) {
     let duration = attr(2.5, item.getAttribute(SCROLLING_DURATION));
     let start = attr('top bottom', item.getAttribute(SCROLLING_START));
     let activeClass = attr(ACTIVE_CLASS, item.getAttribute(SCROLLING_ACTIVE));
+    console.log(activeClass);
 
     //count up function
     const countUp = new CountUp(item, number, {
@@ -45,9 +46,10 @@ export const countUp = function (gsapContext) {
         onEnter: () => {
           countUp.start();
           parent.classList.add(activeClass);
-        },
-        onComplete: () => {
-          parent.classList.remove(activeClass);
+          //after duration remove active class
+          setTimeout(() => {
+            parent.classList.remove(activeClass);
+          }, duration * 1000);
         },
       },
     });

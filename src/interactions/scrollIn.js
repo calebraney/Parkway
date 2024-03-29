@@ -1,6 +1,23 @@
 import { attr, checkBreakpoints, runSplit } from '../utilities';
 
 export const scrollIn = function (gsapContext) {
+  /*
+  
+1. All selectors and options
+2. query selector for all elements
+3. check for media query
+4. check element type and run appropriate animation
+5. functions for each animation. 
+
+
+
+  //animation ID
+  const ANIMATION_ID = 'scrollin';
+  //elements
+  const SCROLLIN_HEADING = '[data-ix-scrollin="heading"]';
+  const SCROLLIN_ITEM = '[data-ix-scrollin="item"]';
+
+  */
   //resuable timeline creation with option attributes for individual customization per element
   const scrollInTL = function (item) {
     //setting attributes
@@ -57,14 +74,14 @@ export const scrollIn = function (gsapContext) {
         splitText.words,
         {
           opacity: 0,
-          y: '2rem',
+          x: '1rem',
           skewX: -25,
         },
         {
           opacity: 1,
-          y: '0rem',
+          x: '0rem',
           skewX: 0,
-          stagger: { each: 0.2, from: 'start' },
+          stagger: { each: 0.1, from: 'start' },
           onComplete: () => {
             splitText.revert();
           },
@@ -90,11 +107,13 @@ export const scrollIn = function (gsapContext) {
         item,
         {
           opacity: 0,
-          y: '2rem',
+          x: '2rem',
+          skewX: -5,
         },
         {
           opacity: 1,
-          y: '0rem',
+          x: '0rem',
+          skewX: 0,
         }
       );
     });
@@ -194,11 +213,13 @@ export const scrollIn = function (gsapContext) {
           child,
           {
             opacity: 0,
-            y: '2rem',
+            x: '2rem',
+            skewX: -5,
           },
           {
             opacity: 1,
-            y: '0rem',
+            x: '0rem',
+            skewX: 0,
           }
         );
       });
@@ -223,20 +244,22 @@ export const scrollIn = function (gsapContext) {
         children,
         {
           opacity: 0,
-          y: '2rem',
+          x: '2rem',
+          skewX: -5,
         },
         {
           opacity: 1,
-          y: '0rem',
+          x: '0rem',
+          skewX: 0,
           stagger: { each: 0.1, from: 'start' },
         }
       );
     });
   };
-  scrollInHeading();
-  scrollInItem();
-  scrollInImage();
-  scrollInContainer();
-  scrollInStagger();
-  scrollInLine();
+  scrollInHeading(gsapContext);
+  scrollInItem(gsapContext);
+  scrollInImage(gsapContext);
+  scrollInContainer(gsapContext);
+  scrollInStagger(gsapContext);
+  scrollInLine(gsapContext);
 };

@@ -23,7 +23,7 @@
     "serve": "^14.1.2"
   },
   "dependencies": {
-    "countup": "^1.8.2",
+    "countup.js": "^2.8.0",
     "split-type": "^0.3.4"
   }
 }
