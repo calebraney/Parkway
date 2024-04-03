@@ -91,7 +91,6 @@ document.addEventListener('DOMContentLoaded', function () {
     //apply the section theme to the nav
     sections.forEach(function (section) {
       sectionTheme = getTheme(section);
-      console.log(sectionTheme);
       applyTheme(section, sectionTheme);
     });
   };
