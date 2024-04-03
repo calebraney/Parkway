@@ -4,7 +4,7 @@ export const scrollIn = function (gsapContext) {
   //animation ID
   const ANIMATION_ID = 'scrollin';
   // selectors
-  const SCROLLIN_ELEMENT = 'data-ix-scrollin';
+  const SCROLLIN_ELEMENT = '[data-ix-scrollin]';
   // types of scrolling elements (value for scrollin element attribute)
   const SCROLLIN_HEADING = 'heading';
   const SCROLLIN_ITEM = 'item';
