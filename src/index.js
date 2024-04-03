@@ -45,7 +45,17 @@ document.addEventListener('DOMContentLoaded', function () {
       //return the theme if it is a valid theme otherwise returns the default theme
       if (themes.includes(elementTheme)) {
         return elementTheme;
-      } else {
+      }
+      //if invert and default theme is 1, return 2
+      if (elementTheme === 'invert' && defaultTheme === themes[0]) {
+        return themes[1];
+      }
+      //if invert and default theme is 2, return 1
+      if (elementTheme === 'invert' && defaultTheme === themes[1]) {
+        return themes[0];
+      }
+      // if value is invalid or inherit return the default theme
+      else {
         return defaultTheme;
       }
     };
@@ -62,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function () {
           start: `top ${NAV_DISTANCE}`,
           end: `bottom ${NAV_DISTANCE}`,
           scrub: true,
-          markers: true,
+          markers: false,
           onEnter: () => {
             nav.setAttribute(theme, appliedTheme);
           },
@@ -81,7 +91,65 @@ document.addEventListener('DOMContentLoaded', function () {
     //apply the section theme to the nav
     sections.forEach(function (section) {
       sectionTheme = getTheme(section);
+      console.log(sectionTheme);
       applyTheme(section, sectionTheme);
+    });
+  };
+
+  const navLinkHover = function () {
+    //selectors
+    const NAV_MENU = '[data-ix-navhover="menu"]';
+    const NAV_LINK = '[data-ix-navhover="link"]';
+    const NAV_LINK_WRAP = '[data-ix-navhover="link-wrap"]';
+    const NAV_LINK_BG = '[data-ix-navhover="bg"]';
+    //options
+    const ACTIVE_CLASS = 'is-hovered';
+    // hover menu tracking
+    let menuHover = false;
+
+    const bg = document.querySelector(NAV_LINK_BG);
+    const menu = document.querySelector(NAV_MENU);
+    const linkWraps = document.querySelectorAll(NAV_LINK_WRAP);
+    //check for elements
+    if (!bg || !menu || linkWraps.length === 0) return;
+
+    //function to handle events
+    const activateLink = function (linkWrap, hoverIn = true) {
+      const link = linkWrap.querySelector(NAV_LINK);
+      //if hover in append the background and add active classes
+      if (hoverIn) {
+        //get state
+        let state = Flip.getState(bg);
+        //append background and add active classes
+        linkWrap.append(bg);
+        link.classList.add(ACTIVE_CLASS);
+        bg.classList.add(ACTIVE_CLASS);
+        // animate
+        Flip.from(state, {
+          duration: menuHover ? 0.4 : 0,
+          ease: 'power2.out',
+        });
+      } else {
+        //if hover out remove active class
+        link.classList.remove(ACTIVE_CLASS);
+      }
+    };
+    //menu hover and tracking
+    menu.addEventListener('mouseover', function () {
+      menuHover = true;
+    });
+    menu.addEventListener('mouseleave', function () {
+      menuHover = false;
+      bg.classList.remove(ACTIVE_CLASS);
+    });
+    //link hover and flip
+    linkWraps.forEach((linkWrap) => {
+      linkWrap.addEventListener('mouseover', function () {
+        activateLink(linkWrap);
+      });
+      linkWrap.addEventListener('mouseleave', function () {
+        activateLink(linkWrap, false);
+      });
     });
   };
 
@@ -200,17 +268,21 @@ document.addEventListener('DOMContentLoaded', function () {
         // Resuable Animations
         accordion(gsapContext);
         hoverActive(gsapContext);
-        mouseOver(gsapContext);
-        parallax(gsapContext);
-        scrollIn(gsapContext);
-        scrolling(gsapContext);
-        countUp(gsapContext);
         //Custom Animations
         missionText();
         approachCTA();
-        // navColorScroll();
-        //or control animations globally in match media
+        navColorScroll();
+        //optional animations
         if (!reduceMotion) {
+          mouseOver(gsapContext);
+          parallax(gsapContext);
+          scrollIn(gsapContext);
+          scrolling(gsapContext);
+          countUp(gsapContext);
+          //optional desktop only
+          if (isDesktop) {
+            navLinkHover();
+          }
         }
       }
     );
