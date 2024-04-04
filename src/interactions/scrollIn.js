@@ -4,13 +4,13 @@ export const scrollIn = function (gsapContext) {
   //animation ID
   const ANIMATION_ID = 'scrollin';
   // selectors
-  const SCROLLIN_ELEMENT = '[data-ix-scrollin]';
+  const SCROLLIN_ELEMENT = 'data-ix-scrollin';
   // types of scrolling elements (value for scrollin element attribute)
   const SCROLLIN_HEADING = 'heading';
   const SCROLLIN_ITEM = 'item';
   const SCROLLIN_CONTAINER = 'container';
   const SCROLLIN_STAGGER = 'stagger';
-  const SCROLLIN_RICH_TEXT = 'right-text';
+  const SCROLLIN_RICH_TEXT = 'rich-text';
   const SCROLLIN_IMAGE_WRAP = 'image-wrap';
   const SCROLLIN_IMAGE = 'image';
   const SCROLLIN_LINE = 'line';
@@ -52,6 +52,33 @@ export const scrollIn = function (gsapContext) {
     return tl;
   };
 
+  //resuable timeline creation with option attributes for individual customization per element
+  const defaultTween = function (item, tl, options = {}) {
+    const varsFrom = {
+      opacity: 0,
+      x: '1rem',
+      skewX: -5,
+    };
+    const varsTo = {
+      opacity: 1,
+      x: '0rem',
+      skewX: 0,
+    };
+    //optional adjustments to the tween
+    // {stagger: large}
+    if (options.stagger === true) {
+      varsTo.stagger = { each: 0.1, from: 'start' };
+    }
+    // {skew: 'large'}
+    if (options.skew === 'large') {
+      varsFrom.skewX = -25;
+    }
+
+    // default GSAP options
+    const tween = tl.fromTo(item, varsFrom, varsTo);
+    return tween;
+  };
+
   const scrollInHeading = function (item) {
     //split the text
     const splitText = runSplit(item);
@@ -59,66 +86,23 @@ export const scrollIn = function (gsapContext) {
     //set heading to full opacity (check to see if needed)
     // item.style.opacity = 1;
     const tl = scrollInTL(item);
-    tl.fromTo(
-      splitText.words,
-      {
-        opacity: 0,
-        x: '1rem',
-        skewX: -25,
-      },
-      {
-        opacity: 1,
-        x: '0rem',
-        skewX: 0,
-        stagger: { each: 0.1, from: 'start' },
-        onComplete: () => {
-          splitText.revert();
-        },
-      }
-    );
+    const tween = defaultTween(splitText.words, tl, { stagger: true, skew: 'large' });
+    //add event calleback to revert text on completion
+    tl.eventCallback('onComplete', () => {
+      splitText.revert();
+    });
   };
 
   const scrollInItem = function (item) {
     if (!item) return;
     const tl = scrollInTL(item);
-    tl.fromTo(
-      item,
-      {
-        opacity: 0,
-        x: '2rem',
-        skewX: -5,
-      },
-      {
-        opacity: 1,
-        x: '0rem',
-        skewX: 0,
-      }
-    );
-  };
-
-  const scrollInImage = function (item) {
-    //item is the image wrap for this animation
-    if (!item) return;
-    const image = item.querySelector(SCROLLIN_IMAGE);
-    if (!image) return;
-    const tl = scrollInTL(item);
-    tl.fromTo(
-      item,
-      {
-        opacity: 0,
-        y: '2rem',
-      },
-      {
-        opacity: 1,
-        y: '0rem',
-      }
-    );
+    const tween = defaultTween(item, tl);
   };
 
   //utility function to get the clipping direction of items (horizontal or vertical only)
   const getCLipStart = function (item) {
     //set defautl direction
-    let defaultDirection = 'left';
+    let defaultDirection = 'right';
     let clipStart;
     //get the clip direction
     const direction = attr(defaultDirection, item.getAttribute(CLIP_DIRECTION));
@@ -142,6 +126,26 @@ export const scrollIn = function (gsapContext) {
       clipStart = clipDirections.bottom;
     }
     return clipStart;
+  };
+
+  const scrollInImage = function (item) {
+    //item is the image wrap for this animation
+    if (!item) return;
+    //set clip path directions
+    const clipStart = getCLipStart(item);
+    const clipEnd = 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)';
+    //create timeline
+    const tl = scrollInTL(item);
+    tl.fromTo(
+      item,
+      {
+        clipPath: clipStart,
+      },
+      {
+        clipPath: clipEnd,
+        duration: 1,
+      }
+    );
   };
 
   const scrollInLine = function (item) {
@@ -169,19 +173,7 @@ export const scrollIn = function (gsapContext) {
     if (children.length === 0) return;
     children.forEach((child) => {
       const tl = scrollInTL(child);
-      tl.fromTo(
-        child,
-        {
-          opacity: 0,
-          x: '2rem',
-          skewX: -5,
-        },
-        {
-          opacity: 1,
-          x: '0rem',
-          skewX: 0,
-        }
-      );
+      const tween = defaultTween(child, tl);
     });
   };
 
@@ -192,20 +184,7 @@ export const scrollIn = function (gsapContext) {
     const children = gsap.utils.toArray(item.children);
     if (children.length === 0) return;
     const tl = scrollInTL(item);
-    tl.fromTo(
-      children,
-      {
-        opacity: 0,
-        x: '2rem',
-        skewX: -5,
-      },
-      {
-        opacity: 1,
-        x: '0rem',
-        skewX: 0,
-        stagger: { each: 0.1, from: 'start' },
-      }
-    );
+    const tween = defaultTween(children, tl, { stagger: true });
   };
 
   const scrollInRichText = function (item) {
@@ -217,10 +196,10 @@ export const scrollIn = function (gsapContext) {
       const childTag = child.tagName;
       console.log(childTag);
       //apply the items animation based on the child type
-      if (['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].includes(childTag)) {
+      if (['H1', 'H2', 'H3', 'H4', 'H5', 'H6'].includes(childTag)) {
         scrollInHeading(child);
       }
-      if (childTag === 'img') {
+      if (childTag === 'FIGURE') {
         scrollInImage(child);
       } else {
         scrollInItem(child);
@@ -229,7 +208,7 @@ export const scrollIn = function (gsapContext) {
   };
 
   //get all elements and apply animations
-  const items = gsap.utils.toArray(SCROLLIN_ELEMENT);
+  const items = gsap.utils.toArray(`[${SCROLLIN_ELEMENT}]`);
   items.forEach((item) => {
     if (!item) return;
     //check breakpoints and quit function if set on specific breakpoints
@@ -243,7 +222,7 @@ export const scrollIn = function (gsapContext) {
     if (scrollInType === SCROLLIN_ITEM) {
       scrollInItem(item);
     }
-    if (scrollInType === SCROLLIN_IMAGE_WRAP) {
+    if (scrollInType === SCROLLIN_IMAGE) {
       scrollInImage(item);
     }
     if (scrollInType === SCROLLIN_LINE) {
