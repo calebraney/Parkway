@@ -194,7 +194,6 @@ export const scrollIn = function (gsapContext) {
     if (children.length === 0) return;
     children.forEach((child) => {
       const childTag = child.tagName;
-      console.log(childTag);
       //apply the items animation based on the child type
       if (['H1', 'H2', 'H3', 'H4', 'H5', 'H6'].includes(childTag)) {
         scrollInHeading(child);
