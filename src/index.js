@@ -255,19 +255,56 @@ document.addEventListener('DOMContentLoaded', function () {
   //////////////////////////////
   //swiper
   const homeInvestmentsSlider = function () {
-    const swiperClass = '.home_investments_slider';
-    const swiperListClass = '.investments_slider_list_wrap';
+    //selectors
+    const SWIPER = '.home_investments_slider';
+    const SWIPER_LIST_WRAP = '.investments_slider_list_wrap';
+    const HEADING_ITEM = '.investments_heading_item';
+    const SUBHEADING_ITEM = '.investments_sub_item';
     const nextButton = '.swiper-next';
     const previousButton = '.swiper-prev';
+    //class options
     const activeClass = 'is-active';
-    const nextClass = 'is-up-next';
-    const prevClass = 'is-up-prev';
-    const afterClass = 'is-next';
-    const beforeClass = 'is-prev';
+    const nextClass = 'is-next';
+    const prevClass = 'is-prev';
+    const afterClass = 'is-after';
+    const beforeClass = 'is-before';
     const disabledClass = 'is-disabled';
+    //function to animate text
+    const updateText = function (swiper, list) {
+      const activeIndex = swiper.activeIndex;
+      list.forEach((item, index) => {
+        if (index === activeIndex) {
+          item.classList.add(activeClass);
+          gsap.fromTo(
+            item,
+            {
+              y: '2rem',
+              opacity: 0,
+            },
+            {
+              y: '0rem',
+              opacity: 1,
+              delay: 0.2,
+              duration: 0.6,
+              ease: 'power1.out',
+            }
+          );
+        } else {
+          item.classList.remove(activeClass);
+          gsap.to(item, {
+            y: '-2rem',
+            opacity: 0,
+            duration: 0.6,
+            ease: 'power1.out',
+          });
+        }
+      });
+    };
     //apply previous and next slides
     const activateSlides = function (swiper) {
       const activeIndex = swiper.activeIndex;
+      // console.log(activeIndex);
+      //remove before and after classes
       swiper.slides.forEach((slide, index) => {
         // console.log('item index:', index);
         //remove previous and next class
@@ -283,47 +320,45 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     };
     //get swipers
-    const swipers = gsap.utils.toArray(swiperListClass);
-    swipers.forEach(function (sliderListEl) {
-      if (!sliderListEl) return;
-      const swiperEl = sliderListEl.closest(swiperClass);
+    const swipers = gsap.utils.toArray(SWIPER);
+    swipers.forEach(function (swiper) {
+      if (!swiper) return;
+      const imageSwiperWrap = swiper.querySelector(SWIPER_LIST_WRAP);
+      const headings = swiper.querySelectorAll(HEADING_ITEM);
+      const subHeadings = swiper.querySelectorAll(SUBHEADING_ITEM);
+
       //get navication sliderLists
-      const nextButtonEl = swiperEl.querySelector(nextButton);
-      const previousButtonEl = swiperEl.querySelector(previousButton);
+      const nextButtonEl = swiper.querySelector(nextButton);
+      const previousButtonEl = swiper.querySelector(previousButton);
       // if navigation sliderLists don't exist return
-      if (!nextButtonEl || !previousButtonEl) return;
-      const swiper = new Swiper(sliderListEl, {
+      if (!nextButtonEl || !previousButtonEl || !imageSwiperWrap) return;
+      const imageSwiper = new Swiper(imageSwiperWrap, {
         modules: [Navigation, EffectCreative],
-        slidesPerView: 1,
-        // spaceBetween: '5%',
+        slidesPerView: 'auto',
+        // spaceBetween: '-5%',
         speed: 800,
         centeredSlides: true,
-        loop: false,
+        loop: true,
         normalizeSlideIndex: true,
-        loopAdditionalSlides: 3,
+        // initialSlide: 0,
+        // loopAdditionalSlides: 5,
+        allowTouchMove: false,
         followFinger: false,
         freeMode: false,
-        updateOnMove: true,
+        updateOnMove: false,
+        draggable: false,
         rewind: false,
         effect: 'creative',
         creativeEffect: {
+          perspective: false,
           limitProgress: 10,
-          perspective: true,
-          prev: {
-            // Array with translate X, Y and Z values
-            translate: ['-10rem', 0, -150],
-            opacity: 0.8,
-            // rotate: [0, -20, 0],
-            // scale: 0.75,
-            // Array with rotate X, Y and Z values (in deg)
-          },
           next: {
             // Array with translate X, Y and Z values
-            translate: ['10rem', 0, -150],
-            opacity: 0.8,
-            // rotate: [0, 20, 0],
-            // scale: 0.75,
-            // Array with rotate X, Y and Z values (in deg)
+            translate: ['75%', 0, 0],
+          },
+          prev: {
+            // Array with translate X, Y and Z values
+            translate: ['-75%', 0, 0],
           },
         },
         navigation: {
@@ -336,11 +371,15 @@ document.addEventListener('DOMContentLoaded', function () {
         slideNextClass: nextClass,
         slidePrevClass: prevClass,
         on: {
-          afterInit: function (swiper) {
-            activateSlides(swiper);
+          afterInit: function (imageSwiper) {
+            activateSlides(imageSwiper);
+            updateText(imageSwiper, headings);
+            updateText(imageSwiper, subHeadings);
           },
-          slideChangeTransitionStart: function (swiper) {
-            activateSlides(swiper);
+          slideChangeTransitionStart: function (imageSwiper) {
+            activateSlides(imageSwiper);
+            updateText(imageSwiper, headings);
+            updateText(imageSwiper, subHeadings);
           },
         },
       });

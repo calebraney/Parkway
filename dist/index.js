@@ -1409,13 +1409,17 @@
     const SCROLLING_WIDTH_END = "data-ix-scrolling-width-end";
     const SCROLLING_HEIGHT_START = "data-ix-scrolling-height-start";
     const SCROLLING_HEIGHT_END = "data-ix-scrolling-height-end";
+    const SCROLLING_ROTATE_X_START = "data-ix-scrolling-rotate-x-start";
+    const SCROLLING_ROTATE_X_END = "data-ix-scrolling-rotate-x-end";
+    const SCROLLING_ROTATE_Y_START = "data-ix-scrolling-rotate-y-start";
+    const SCROLLING_ROTATE_Y_END = "data-ix-scrolling-rotate-y-end";
     const SCROLLING_ROTATE_Z_START = "data-ix-scrolling-rotate-z-start";
     const SCROLLING_ROTATE_Z_END = "data-ix-scrolling-rotate-z-end";
     const SCROLLING_OPACITY_START = "data-ix-scrolling-opacity-start";
     const SCROLLING_OPACITY_END = "data-ix-scrolling-opacity-end";
     const SCROLLING_CLIP_START = "data-ix-scrolling-clip-start";
     const SCROLLING_CLIP_END = "data-ix-scrolling-clip-end";
-    const SCROLLING_CLIP_TYPE = "data-ix-scrolling-clip-end";
+    const SCROLLING_CLIP_TYPE = "data-ix-scrolling-clip-type";
     const scrollingItems = gsap.utils.toArray(SCROLLING_WRAP);
     scrollingItems.forEach((scrollingItem) => {
       const layers = scrollingItem.querySelectorAll(SCROLLING_LAYER);
@@ -1471,6 +1475,10 @@
         varsTo.width = processAttribute(SCROLLING_WIDTH_END, "0%");
         varsFrom.height = processAttribute(SCROLLING_HEIGHT_START, "0%");
         varsTo.height = processAttribute(SCROLLING_HEIGHT_END, "0%");
+        varsFrom.rotateX = processAttribute(SCROLLING_ROTATE_X_START, 0);
+        varsTo.rotateX = processAttribute(SCROLLING_ROTATE_X_END, 0);
+        varsFrom.rotateY = processAttribute(SCROLLING_ROTATE_Y_START, 0);
+        varsTo.rotateY = processAttribute(SCROLLING_ROTATE_Y_END, 0);
         varsFrom.rotateZ = processAttribute(SCROLLING_ROTATE_Z_START, 0);
         varsTo.rotateZ = processAttribute(SCROLLING_ROTATE_Z_END, 0);
         varsFrom.opacity = processAttribute(SCROLLING_OPACITY_START, 0);
@@ -6353,16 +6361,48 @@
       });
     };
     const homeInvestmentsSlider = function() {
-      const swiperClass = ".home_investments_slider";
-      const swiperListClass = ".investments_slider_list_wrap";
+      const SWIPER = ".home_investments_slider";
+      const SWIPER_LIST_WRAP = ".investments_slider_list_wrap";
+      const HEADING_ITEM = ".investments_heading_item";
+      const SUBHEADING_ITEM = ".investments_sub_item";
       const nextButton = ".swiper-next";
       const previousButton = ".swiper-prev";
       const activeClass = "is-active";
-      const nextClass = "is-up-next";
-      const prevClass = "is-up-prev";
-      const afterClass = "is-next";
-      const beforeClass = "is-prev";
+      const nextClass = "is-next";
+      const prevClass = "is-prev";
+      const afterClass = "is-after";
+      const beforeClass = "is-before";
       const disabledClass = "is-disabled";
+      const updateText = function(swiper, list) {
+        const activeIndex = swiper.activeIndex;
+        list.forEach((item, index) => {
+          if (index === activeIndex) {
+            item.classList.add(activeClass);
+            gsap.fromTo(
+              item,
+              {
+                y: "2rem",
+                opacity: 0
+              },
+              {
+                y: "0rem",
+                opacity: 1,
+                delay: 0.2,
+                duration: 0.6,
+                ease: "power1.out"
+              }
+            );
+          } else {
+            item.classList.remove(activeClass);
+            gsap.to(item, {
+              y: "-2rem",
+              opacity: 0,
+              duration: 0.6,
+              ease: "power1.out"
+            });
+          }
+        });
+      };
       const activateSlides = function(swiper) {
         const activeIndex = swiper.activeIndex;
         swiper.slides.forEach((slide2, index) => {
@@ -6376,38 +6416,39 @@
           }
         });
       };
-      const swipers = gsap.utils.toArray(swiperListClass);
-      swipers.forEach(function(sliderListEl) {
-        if (!sliderListEl)
+      const swipers = gsap.utils.toArray(SWIPER);
+      swipers.forEach(function(swiper) {
+        if (!swiper)
           return;
-        const swiperEl = sliderListEl.closest(swiperClass);
-        const nextButtonEl = swiperEl.querySelector(nextButton);
-        const previousButtonEl = swiperEl.querySelector(previousButton);
-        if (!nextButtonEl || !previousButtonEl)
+        const imageSwiperWrap = swiper.querySelector(SWIPER_LIST_WRAP);
+        const headings = swiper.querySelectorAll(HEADING_ITEM);
+        const subHeadings = swiper.querySelectorAll(SUBHEADING_ITEM);
+        const nextButtonEl = swiper.querySelector(nextButton);
+        const previousButtonEl = swiper.querySelector(previousButton);
+        if (!nextButtonEl || !previousButtonEl || !imageSwiperWrap)
           return;
-        const swiper = new Swiper(sliderListEl, {
+        const imageSwiper = new Swiper(imageSwiperWrap, {
           modules: [Navigation, EffectCreative],
-          slidesPerView: 1,
+          slidesPerView: "auto",
           speed: 800,
           centeredSlides: true,
-          loop: false,
+          loop: true,
           normalizeSlideIndex: true,
-          loopAdditionalSlides: 3,
+          allowTouchMove: false,
           followFinger: false,
           freeMode: false,
-          updateOnMove: true,
+          updateOnMove: false,
+          draggable: false,
           rewind: false,
           effect: "creative",
           creativeEffect: {
+            perspective: false,
             limitProgress: 10,
-            perspective: true,
-            prev: {
-              translate: ["-10rem", 0, -150],
-              opacity: 0.8
-            },
             next: {
-              translate: ["10rem", 0, -150],
-              opacity: 0.8
+              translate: ["75%", 0, 0]
+            },
+            prev: {
+              translate: ["-75%", 0, 0]
             }
           },
           navigation: {
@@ -6420,11 +6461,15 @@
           slideNextClass: nextClass,
           slidePrevClass: prevClass,
           on: {
-            afterInit: function(swiper2) {
-              activateSlides(swiper2);
+            afterInit: function(imageSwiper2) {
+              activateSlides(imageSwiper2);
+              updateText(imageSwiper2, headings);
+              updateText(imageSwiper2, subHeadings);
             },
-            slideChangeTransitionStart: function(swiper2) {
-              activateSlides(swiper2);
+            slideChangeTransitionStart: function(imageSwiper2) {
+              activateSlides(imageSwiper2);
+              updateText(imageSwiper2, headings);
+              updateText(imageSwiper2, subHeadings);
             }
           }
         });
