@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "countup.js": "^2.8.0",
-    "split-type": "^0.3.4"
+    "split-type": "^0.3.4",
+    "swiper": "^11.1.0"
   }
 }

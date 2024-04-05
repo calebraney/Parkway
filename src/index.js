@@ -6,6 +6,8 @@ import { mouseOver } from './interactions/mouseOver';
 import { parallax } from './interactions/parallax';
 import { scrollIn } from './interactions/scrollIn';
 import { scrolling } from './interactions/scrolling';
+import Swiper from 'swiper';
+import { Navigation, EffectCreative } from 'swiper/modules';
 
 document.addEventListener('DOMContentLoaded', function () {
   // Comment out for production
@@ -251,6 +253,169 @@ document.addEventListener('DOMContentLoaded', function () {
   };
 
   //////////////////////////////
+  //swiper
+  const homeInvestmentsSlider = function () {
+    const swiperClass = '.home_investments_slider';
+    const swiperListClass = '.investments_slider_list_wrap';
+    const nextButton = '.swiper-next';
+    const previousButton = '.swiper-prev';
+    const activeClass = 'is-active';
+    const nextClass = 'is-up-next';
+    const prevClass = 'is-up-prev';
+    const afterClass = 'is-next';
+    const beforeClass = 'is-prev';
+    const disabledClass = 'is-disabled';
+    //apply previous and next slides
+    const activateSlides = function (swiper) {
+      const activeIndex = swiper.activeIndex;
+      swiper.slides.forEach((slide, index) => {
+        // console.log('item index:', index);
+        //remove previous and next class
+        slide.classList.remove(beforeClass);
+        slide.classList.remove(afterClass);
+        //check if before or active
+        if (index < activeIndex) {
+          slide.classList.add(beforeClass);
+        }
+        if (index > activeIndex) {
+          slide.classList.add(afterClass);
+        }
+      });
+    };
+    //get swipers
+    const swipers = gsap.utils.toArray(swiperListClass);
+    swipers.forEach(function (sliderListEl) {
+      if (!sliderListEl) return;
+      const swiperEl = sliderListEl.closest(swiperClass);
+      //get navication sliderLists
+      const nextButtonEl = swiperEl.querySelector(nextButton);
+      const previousButtonEl = swiperEl.querySelector(previousButton);
+      // if navigation sliderLists don't exist return
+      if (!nextButtonEl || !previousButtonEl) return;
+      const swiper = new Swiper(sliderListEl, {
+        modules: [Navigation, EffectCreative],
+        slidesPerView: 1,
+        // spaceBetween: '5%',
+        speed: 800,
+        centeredSlides: true,
+        loop: false,
+        normalizeSlideIndex: true,
+        loopAdditionalSlides: 3,
+        followFinger: false,
+        freeMode: false,
+        updateOnMove: true,
+        rewind: false,
+        effect: 'creative',
+        creativeEffect: {
+          limitProgress: 10,
+          perspective: true,
+          prev: {
+            // Array with translate X, Y and Z values
+            translate: ['-10rem', 0, -150],
+            opacity: 0.8,
+            // rotate: [0, -20, 0],
+            // scale: 0.75,
+            // Array with rotate X, Y and Z values (in deg)
+          },
+          next: {
+            // Array with translate X, Y and Z values
+            translate: ['10rem', 0, -150],
+            opacity: 0.8,
+            // rotate: [0, 20, 0],
+            // scale: 0.75,
+            // Array with rotate X, Y and Z values (in deg)
+          },
+        },
+        navigation: {
+          nextEl: nextButtonEl,
+          prevEl: previousButtonEl,
+          disabledClass: disabledClass,
+        },
+        slideActiveClass: activeClass,
+        slideDuplicateActiveClass: activeClass,
+        slideNextClass: nextClass,
+        slidePrevClass: prevClass,
+        on: {
+          afterInit: function (swiper) {
+            activateSlides(swiper);
+          },
+          slideChangeTransitionStart: function (swiper) {
+            activateSlides(swiper);
+          },
+        },
+      });
+    });
+  };
+
+  // const investmentsHeroSlider = function () {
+  //   const sliderWrap = '.home_investments_slider.swiper';
+  //   const nextButton = '.swiper-next';
+  //   const previousButton = '.swiper-prev';
+  //   const activeClass = 'is-active';
+  //   const nextClass = 'is-next';
+  //   const prevClass = 'is-prev';
+  //   const disabledClass = 'is-disabled';
+  //   const bulletsWrapClass = '.swiper-bullet-wrapper';
+
+  //   gsap.utils.toArray(sliderWrap).forEach(function (slider) {
+  //     if (!slider) return;
+  //     //get navication sliders
+  //     const nextButtonEl = slider.querySelector(nextButton);
+  //     const previousButtonEl = slider.querySelector(previousButton);
+  //     const bulletWrapEl = slider.querySelector(bulletsWrapClass);
+  //     // if navigation sliders don't exist return
+  //     if (!nextButtonEl || !previousButtonEl) return;
+  //     const swiper = new Swiper(slider, {
+  //       modules: [Navigation, Pagination],
+  //       slidesPerView: 1,
+  //       spaceBetween: '5%',
+  //       speed: 600,
+  //       centeredSlides: true,
+  //       loop: true,
+  //       drag: false,
+  //       followFinger: false,
+  //       freeMode: false,
+  //       updateOnMove: true,
+  //       rewind: false,
+  //       effect: 'creative',
+  //       creativeEffect: {
+  //         perspective: true,
+  //         next: {
+  //           // Array with translate X, Y and Z values
+  //           translate: [0, 0, 0],
+  //           // Array with rotate X, Y and Z values (in deg)
+  //           rotate: [0, 24, 0],
+  //           opacity: 0.5,
+  //         },
+  //         prev: {
+  //           // Array with translate X, Y and Z values
+  //           translate: [0, 0, 0],
+  //           // Array with rotate X, Y and Z values (in deg)
+  //           rotate: [0, 24, 0],
+  //           opacity: 0.5,
+  //         },
+  //       },
+  //       pagination: {
+  //         el: bulletWrapEl,
+  //         bulletActiveClass: activeClass,
+  //         bulletClass: 'swiper-bullet',
+  //         bulletElement: 'button',
+  //         clickable: true,
+  //       },
+  //       navigation: {
+  //         nextEl: nextButtonEl,
+  //         prevEl: previousButtonEl,
+  //         disabledClass: disabledClass,
+  //       },
+  //       slideActiveClass: activeClass,
+  //       slideDuplicateActiveClass: activeClass,
+  //       slideNextClass: nextClass,
+  //       slidePrevClass: prevClass,
+  //     });
+  //   });
+  // };
+
+  //////////////////////////////
   //Control Functions on page load
   const gsapInit = function () {
     let mm = gsap.matchMedia();
@@ -271,6 +436,7 @@ document.addEventListener('DOMContentLoaded', function () {
         missionText();
         approachCTA();
         navColorScroll();
+        homeInvestmentsSlider();
         //optional animations
         if (!reduceMotion) {
           mouseOver(gsapContext);
