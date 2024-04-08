@@ -199,6 +199,40 @@ document.addEventListener('DOMContentLoaded', function () {
     );
   };
 
+  const approachHero = function () {
+    const H1 = '[data-ix-approachhero="h1"]';
+    //settings
+    const ACTIVE_CLASS = 'is-active';
+    const DURATION = 0.6;
+    const headings = gsap.utils.toArray(H1);
+    if (headings.length === 0) return;
+    gsap.set(headings, { opacity: 1 });
+    gsap.fromTo(
+      headings,
+      {
+        y: '110%',
+      },
+      {
+        y: '0%',
+        duration: DURATION,
+        ease: 'power1.out',
+      }
+    );
+    setTimeout(() => {
+      //get state
+      let state = Flip.getState(headings, { props: 'color,fontVariations' });
+      //append background and add active classes
+      headings.forEach((item) => {
+        item.classList.add(ACTIVE_CLASS);
+      });
+      // animate
+      Flip.from(state, {
+        duration: 0.8,
+        delay: 0.2,
+        ease: 'power2.out',
+      });
+    }, DURATION * 1000);
+  };
   const approachCTA = function () {
     const WRAP = '[data-ix-cta="wrap"]';
     const IMAGE = '[data-ix-cta="image"]';
@@ -254,6 +288,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   //////////////////////////////
   //swiper
+
   const homeInvestmentsSlider = function () {
     //selectors
     const SWIPER = '.home_investments_slider';
@@ -300,7 +335,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       });
     };
-    //apply previous and next slides
+    //Utility function to activate perspective slides
     const activateSlides = function (swiper) {
       const activeIndex = swiper.activeIndex;
       // console.log(activeIndex);
@@ -319,6 +354,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       });
     };
+
     //get swipers
     const swipers = gsap.utils.toArray(SWIPER);
     swipers.forEach(function (swiper) {
@@ -386,7 +422,121 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   };
 
-  const approachTeamSlider = function () {
+  const portfolioSlider = function () {
+    //selectors
+    const SWIPER = '.portfolio_slider_layout';
+    const SWIPER_LIST_WRAP = '.portfolio_slider_list_wrap';
+    const HEADING_ITEM = '.portfolio_heading_item';
+    const SUBHEADING_ITEM = '.portfolio_sub_item';
+    //class options
+    const activeClass = 'is-active';
+    const nextClass = 'is-next';
+    const prevClass = 'is-prev';
+    const afterClass = 'is-after';
+    const beforeClass = 'is-before';
+    //animation options
+    const DURATION = 0.8;
+    const DURATION_MS = DURATION * 1000;
+    //function to animate text
+    const updateText = function (swiper, list) {
+      const activeIndex = swiper.activeIndex;
+      list.forEach((item, index) => {
+        if (index === activeIndex) {
+          item.classList.add(activeClass);
+          gsap.fromTo(
+            item,
+            {
+              y: '2rem',
+              opacity: 0,
+            },
+            {
+              y: '0rem',
+              opacity: 1,
+              delay: 0.2,
+              duration: 0.6,
+              ease: 'power1.out',
+            }
+          );
+        } else {
+          item.classList.remove(activeClass);
+          gsap.to(item, {
+            y: '-2rem',
+            opacity: 0,
+            duration: 0.6,
+            ease: 'power1.out',
+          });
+        }
+      });
+    };
+    //Utility function to activate perspective slides
+    const activateSlides = function (swiper) {
+      const activeIndex = swiper.activeIndex;
+      // console.log(activeIndex);
+      //remove before and after classes
+      swiper.slides.forEach((slide, index) => {
+        // console.log('item index:', index);
+        //remove previous and next class
+        slide.classList.remove(beforeClass);
+        slide.classList.remove(afterClass);
+        //check if before or active
+        if (index < activeIndex) {
+          slide.classList.add(beforeClass);
+        }
+        if (index > activeIndex) {
+          slide.classList.add(afterClass);
+        }
+      });
+    };
+    const changeSlide = function (swiper, activeIndex) {};
+
+    //get swipers
+    const swipers = gsap.utils.toArray(SWIPER);
+    swipers.forEach(function (swiper) {
+      if (!swiper) return;
+      const imageSwiperWrap = swiper.querySelector(SWIPER_LIST_WRAP);
+      const headings = swiper.querySelectorAll(HEADING_ITEM);
+      const subHeadings = swiper.querySelectorAll(SUBHEADING_ITEM);
+
+      if (!imageSwiperWrap) return;
+      const imageSwiper = new Swiper(imageSwiperWrap, {
+        modules: [EffectCreative],
+        slidesPerView: 'auto',
+        // spaceBetween: '-5%',
+        speed: DURATION_MS,
+        normalizeSlideIndex: true,
+        // initialSlide: 0,
+        // loopAdditionalSlides: 5,
+        allowTouchMove: false,
+        effect: 'creative',
+        creativeEffect: {
+          perspective: false,
+          limitProgress: 10,
+          next: {
+            // Array with translate X, Y and Z values
+            translate: ['75%', 0, 0],
+          },
+          prev: {
+            // Array with translate X, Y and Z values
+            translate: ['-75%', 0, 0],
+          },
+        },
+        slideActiveClass: activeClass,
+        slideDuplicateActiveClass: activeClass,
+        slideNextClass: nextClass,
+        slidePrevClass: prevClass,
+        on: {
+          afterInit: function (imageSwiper) {
+            activateSlides(imageSwiper);
+          },
+          slideChangeTransitionStart: function (imageSwiper) {
+            activateSlides(imageSwiper);
+          },
+        },
+      });
+    });
+  };
+
+  const approachTestimonialSlider = function () {
     //selectors
     const SWIPER = '.testimonials_slider';
     const SWIPER_LIST_WRAP = '.testimonials_list_wrap';
@@ -546,10 +696,12 @@ document.addEventListener('DOMContentLoaded', function () {
         hoverActive(gsapContext);
         //Custom Animations
         missionText();
+        approachHero();
         approachCTA();
         navColorScroll();
         homeInvestmentsSlider();
-        approachTeamSlider();
+        approachTestimonialSlider();
+        portfolioSlider();
         //optional animations
         if (!reduceMotion) {
           mouseOver(gsapContext);

@@ -5914,6 +5914,7 @@
     } = _ref;
     const pfx = "swiper-pagination";
     extendParams({
+      pagination: {
         el: null,
         bulletElement: "span",
         clickable: false,
@@ -6764,6 +6765,37 @@
         }
       );
     };
+    const approachHero = function() {
+      const H1 = '[data-ix-approachhero="h1"]';
+      const ACTIVE_CLASS = "is-active";
+      const DURATION = 0.6;
+      const headings = gsap.utils.toArray(H1);
+      if (headings.length === 0)
+        return;
+      gsap.set(headings, { opacity: 1 });
+      gsap.fromTo(
+        headings,
+        {
+          y: "110%"
+        },
+        {
+          y: "0%",
+          duration: DURATION,
+          ease: "power1.out"
+        }
+      );
+      setTimeout(() => {
+        let state = Flip.getState(headings, { props: "color,fontVariations" });
+        headings.forEach((item) => {
+          item.classList.add(ACTIVE_CLASS);
+        });
+        Flip.from(state, {
+          duration: 0.8,
+          delay: 0.2,
+          ease: "power2.out"
+        });
+      }, DURATION * 1e3);
+    };
     const approachCTA = function() {
       const WRAP = '[data-ix-cta="wrap"]';
       const IMAGE = '[data-ix-cta="image"]';
@@ -6927,7 +6959,105 @@
         });
       });
     };
-    const approachTeamSlider = function() {
+    const portfolioSlider = function() {
+      const SWIPER = ".portfolio_slider_layout";
+      const SWIPER_LIST_WRAP = ".portfolio_slider_list_wrap";
+      const HEADING_ITEM = ".portfolio_heading_item";
+      const SUBHEADING_ITEM = ".portfolio_sub_item";
+      const activeClass = "is-active";
+      const nextClass = "is-next";
+      const prevClass = "is-prev";
+      const afterClass = "is-after";
+      const beforeClass = "is-before";
+      const DURATION = 0.8;
+      const DURATION_MS = DURATION * 1e3;
+      const updateText = function(swiper, list) {
+        const activeIndex = swiper.activeIndex;
+        list.forEach((item, index) => {
+          if (index === activeIndex) {
+            item.classList.add(activeClass);
+            gsap.fromTo(
+              item,
+              {
+                y: "2rem",
+                opacity: 0
+              },
+              {
+                y: "0rem",
+                opacity: 1,
+                delay: 0.2,
+                duration: 0.6,
+                ease: "power1.out"
+              }
+            );
+          } else {
+            item.classList.remove(activeClass);
+            gsap.to(item, {
+              y: "-2rem",
+              opacity: 0,
+              duration: 0.6,
+              ease: "power1.out"
+            });
+          }
+        });
+      };
+      const activateSlides = function(swiper) {
+        const activeIndex = swiper.activeIndex;
+        swiper.slides.forEach((slide2, index) => {
+          slide2.classList.remove(beforeClass);
+          slide2.classList.remove(afterClass);
+          if (index < activeIndex) {
+            slide2.classList.add(beforeClass);
+          }
+          if (index > activeIndex) {
+            slide2.classList.add(afterClass);
+          }
+        });
+      };
+      const changeSlide = function(swiper, activeIndex) {
+      };
+      const swipers = gsap.utils.toArray(SWIPER);
+      swipers.forEach(function(swiper) {
+        if (!swiper)
+          return;
+        const imageSwiperWrap = swiper.querySelector(SWIPER_LIST_WRAP);
+        const headings = swiper.querySelectorAll(HEADING_ITEM);
+        const subHeadings = swiper.querySelectorAll(SUBHEADING_ITEM);
+        if (!imageSwiperWrap)
+          return;
+        const imageSwiper = new Swiper(imageSwiperWrap, {
+          modules: [EffectCreative],
+          slidesPerView: "auto",
+          speed: DURATION_MS,
+          normalizeSlideIndex: true,
+          allowTouchMove: false,
+          effect: "creative",
+          creativeEffect: {
+            perspective: false,
+            limitProgress: 10,
+            next: {
+              translate: ["75%", 0, 0]
+            },
+            prev: {
+              translate: ["-75%", 0, 0]
+            }
+          },
+          slideActiveClass: activeClass,
+          slideDuplicateActiveClass: activeClass,
+          slideNextClass: nextClass,
+          slidePrevClass: prevClass,
+          on: {
+            afterInit: function(imageSwiper2) {
+              activateSlides(imageSwiper2);
+            },
+            slideChangeTransitionStart: function(imageSwiper2) {
+              activateSlides(imageSwiper2);
+            }
+          }
+        });
+      });
+    };
+    const approachTestimonialSlider = function() {
       const SWIPER = ".testimonials_slider";
       const SWIPER_LIST_WRAP = ".testimonials_list_wrap";
       const nextButton = ".swiper-next";
@@ -7004,10 +7134,12 @@
           accordion(gsapContext);
           hoverActive(gsapContext);
           missionText();
+          approachHero();
           approachCTA();
           navColorScroll();
           homeInvestmentsSlider();
-          approachTeamSlider();
+          approachTestimonialSlider();
+          portfolioSlider();
           if (!reduceMotion) {
             mouseOver(gsapContext);
             parallax(gsapContext);
