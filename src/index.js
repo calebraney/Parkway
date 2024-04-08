@@ -7,7 +7,7 @@ import { parallax } from './interactions/parallax';
 import { scrollIn } from './interactions/scrollIn';
 import { scrolling } from './interactions/scrolling';
 import Swiper from 'swiper';
-import { Navigation, EffectCreative } from 'swiper/modules';
+import { Navigation, Pagination, EffectCreative } from 'swiper/modules';
 
 document.addEventListener('DOMContentLoaded', function () {
   // Comment out for production
@@ -386,6 +386,79 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   };
 
+  const approachTeamSlider = function () {
+    //selectors
+    const SWIPER = '.testimonials_slider';
+    const SWIPER_LIST_WRAP = '.testimonials_list_wrap';
+    const nextButton = '.swiper-next';
+    const previousButton = '.swiper-prev';
+    const bulletsWrapClass = '.swiper-bullet-wrapper';
+
+    //class options
+    const activeClass = 'is-active';
+    const disabledClass = 'is-disabled';
+
+    //get swipers
+    const swipers = gsap.utils.toArray(SWIPER);
+    swipers.forEach(function (swiper) {
+      if (!swiper) return;
+      const swiperList = swiper.querySelector(SWIPER_LIST_WRAP);
+
+      //get navication sliderLists
+      const nextButtonEl = swiper.querySelector(nextButton);
+      const previousButtonEl = swiper.querySelector(previousButton);
+      const bulletWrapEl = swiper.querySelector(bulletsWrapClass);
+
+      // if navigation sliderLists don't exist return
+      if (!nextButtonEl || !previousButtonEl || !swiperList) return;
+      const testimonialSwiper = new Swiper(swiperList, {
+        modules: [Navigation, Pagination, EffectCreative],
+        slidesPerView: 1,
+        speed: 800,
+        centeredSlides: true,
+        loop: true,
+        normalizeSlideIndex: true,
+        allowTouchMove: false,
+        followFinger: false,
+        freeMode: false,
+        updateOnMove: false,
+        draggable: true,
+        rewind: false,
+        effect: 'creative',
+        creativeEffect: {
+          perspective: true,
+          limitProgress: 1,
+          next: {
+            // Array with translate X, Y and Z values
+            translate: ['60%', 0, 0],
+            rotate: [0, -75, 0],
+            opacity: 0,
+          },
+          prev: {
+            // Array with translate X, Y and Z values
+            translate: ['-60%', 0, 0],
+            rotate: [0, 75, 0],
+            opacity: 0,
+          },
+        },
+        pagination: {
+          el: bulletWrapEl,
+          bulletActiveClass: activeClass,
+          bulletClass: 'swiper-bullet',
+          bulletElement: 'button',
+          clickable: true,
+        },
+        navigation: {
+          nextEl: nextButtonEl,
+          prevEl: previousButtonEl,
+          disabledClass: disabledClass,
+        },
+        slideActiveClass: activeClass,
+        slideDuplicateActiveClass: activeClass,
+      });
+    });
+  };
+
   // const investmentsHeroSlider = function () {
   //   const sliderWrap = '.home_investments_slider.swiper';
   //   const nextButton = '.swiper-next';
@@ -476,6 +549,7 @@ document.addEventListener('DOMContentLoaded', function () {
         approachCTA();
         navColorScroll();
         homeInvestmentsSlider();
+        approachTeamSlider();
         //optional animations
         if (!reduceMotion) {
           mouseOver(gsapContext);
