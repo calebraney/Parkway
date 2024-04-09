@@ -301,7 +301,6 @@ document.addEventListener('DOMContentLoaded', function () {
       const closeBtn = modal.querySelector(CLOSE);
       const overlay = modal.querySelector(OVERLAY);
       if (!closeBtn || !overlay) return;
-      console.log(modal);
 
       //make modal timeline
       const tl = modalTimeline(modal);
@@ -318,8 +317,8 @@ document.addEventListener('DOMContentLoaded', function () {
         openModal(modal, tl, false);
       });
       window.addEventListener('keydown', (e) => {
-        // if key is tab and the target is the password Button, focus on the password input
-        if (e.key == 'Escape') {
+        // if key is tab and the target is th
+        if (e.key == 'Escape' && modal.classList.contains(ACTIVE_CLASS)) {
           e.preventDefault();
           openModal(modal, tl, false);
         }

@@ -7178,7 +7178,6 @@
         const overlay = modal.querySelector(OVERLAY);
         if (!closeBtn || !overlay)
           return;
-        console.log(modal);
         const tl = modalTimeline(modal);
         trigger.addEventListener("click", function() {
           openModal(modal, tl, true);
@@ -7190,7 +7189,7 @@
           openModal(modal, tl, false);
         });
         window.addEventListener("keydown", (e) => {
-          if (e.key == "Escape") {
+          if (e.key == "Escape" && modal.classList.contains(ACTIVE_CLASS)) {
             e.preventDefault();
             openModal(modal, tl, false);
           }
