@@ -237,6 +237,95 @@ document.addEventListener('DOMContentLoaded', function () {
     );
   };
 
+  const teamModal = function () {
+    //selectors
+    const TRIGGER = '[data-ix-popup="trigger"]';
+    const MODAL = '[data-ix-popup="modal"]';
+    const MODAL_LAYOUT = '[data-ix-popup="modal-layout"]';
+    const OVERLAY = '[data-ix-popup="overlay"]';
+    const CLOSE = '[data-ix-popup="close"]';
+
+    //options
+    const ACTIVE_CLASS = 'is-active';
+    const NO_SCROLL = 'no-scroll';
+    const ID = 'data-ix-popup-id';
+    const triggers = gsap.utils.toArray(TRIGGER);
+    const modals = gsap.utils.toArray(MODAL);
+    const body = document.querySelector('body');
+    if (triggers.length === 0 || modals.length === 0) return;
+
+    const modalTimeline = function (modal) {
+      const closeBtn = modal.querySelector(CLOSE);
+      const layout = modal.querySelector(MODAL_LAYOUT);
+      const overlay = modal.querySelector(OVERLAY);
+      if (!closeBtn || !layout || !overlay) return;
+      const tl = gsap.timeline({
+        paused: true,
+        defaults: {
+          duration: 0.6,
+          ease: 'power1.out',
+        },
+      });
+      tl.set(modal, { display: 'none' });
+      tl.set(modal, { display: 'block' });
+      tl.fromTo(layout, { xPercent: 100 }, { xPercent: 0 });
+      tl.fromTo(overlay, { opacity: 0 }, { opacity: 1 }, '<');
+      return tl;
+    };
+
+    const openModal = function (modal, tl, open = true) {
+      if (open) {
+        tl.restart();
+        modal.classList.add(ACTIVE_CLASS);
+        body.classList.add(NO_SCROLL);
+      } else {
+        modal.classList.remove(ACTIVE_CLASS);
+        body.classList.remove(NO_SCROLL);
+        tl.reverse();
+      }
+    };
+    function findModal(modals, itemId) {
+      for (let i = 0; i < modals.length; i++) {
+        if (modals[i].getAttribute('data-ix-popup-id') === itemId) {
+          return modals[i];
+        }
+      }
+      return null; // Return null if no matching modal found
+    }
+
+    triggers.forEach((trigger) => {
+      const itemID = trigger.getAttribute(ID);
+      const modal = findModal(modals, itemID);
+      //get triggers inside the modal
+      if (!modal) return;
+      const closeBtn = modal.querySelector(CLOSE);
+      const overlay = modal.querySelector(OVERLAY);
+      if (!closeBtn || !overlay) return;
+      console.log(modal);
+
+      //make modal timeline
+      const tl = modalTimeline(modal);
+      //open modal on click
+
+      trigger.addEventListener('click', function () {
+        openModal(modal, tl, true);
+      });
+      //close modal on click
+      overlay.addEventListener('click', function () {
+        openModal(modal, tl, false);
+      });
+      closeBtn.addEventListener('click', function () {
+        openModal(modal, tl, false);
+      });
+      window.addEventListener('keydown', (e) => {
+        // if key is tab and the target is the password Button, focus on the password input
+        if (e.key == 'Escape') {
+          e.preventDefault();
+          openModal(modal, tl, false);
+        }
+      });
+    });
+  };
   const approachHero = function () {
     const H1 = '[data-ix-approachhero="h1"]';
     //settings
@@ -611,12 +700,14 @@ document.addEventListener('DOMContentLoaded', function () {
             translate: ['60%', 0, 0],
             rotate: [0, -75, 0],
             opacity: 0,
+            scale: 0.75,
           },
           prev: {
             // Array with translate X, Y and Z values
             translate: ['-60%', 0, 0],
             rotate: [0, 75, 0],
             opacity: 0,
+            scale: 0.75,
           },
         },
         pagination: {
@@ -727,6 +818,7 @@ document.addEventListener('DOMContentLoaded', function () {
         missionText();
         approachHero();
         approachCTA();
+        teamModal();
         navColorScroll();
         homeInvestmentsSlider();
         approachTestimonialSlider();

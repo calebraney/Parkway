@@ -1405,6 +1405,8 @@
     const SCROLLING_X_END = "data-ix-scrolling-x-end";
     const SCROLLING_Y_START = "data-ix-scrolling-y-start";
     const SCROLLING_Y_END = "data-ix-scrolling-y-end";
+    const SCROLLING_SCALE_START = "data-ix-scrolling-scale-start";
+    const SCROLLING_SCALE_END = "data-ix-scrolling-scale-end";
     const SCROLLING_WIDTH_START = "data-ix-scrolling-width-start";
     const SCROLLING_WIDTH_END = "data-ix-scrolling-width-end";
     const SCROLLING_HEIGHT_START = "data-ix-scrolling-height-start";
@@ -1471,6 +1473,8 @@
         varsTo.x = processAttribute(SCROLLING_X_END, "0%");
         varsFrom.y = processAttribute(SCROLLING_Y_START, "0%");
         varsTo.y = processAttribute(SCROLLING_Y_END, "0%");
+        varsFrom.scale = processAttribute(SCROLLING_SCALE_START, 1);
+        varsTo.scale = processAttribute(SCROLLING_SCALE_END, 1);
         varsFrom.width = processAttribute(SCROLLING_WIDTH_START, "0%");
         varsTo.width = processAttribute(SCROLLING_WIDTH_END, "0%");
         varsFrom.height = processAttribute(SCROLLING_HEIGHT_START, "0%");
@@ -7113,6 +7117,86 @@
         }
       );
     };
+    const teamModal = function() {
+      const TRIGGER = '[data-ix-popup="trigger"]';
+      const MODAL = '[data-ix-popup="modal"]';
+      const MODAL_LAYOUT = '[data-ix-popup="modal-layout"]';
+      const OVERLAY = '[data-ix-popup="overlay"]';
+      const CLOSE = '[data-ix-popup="close"]';
+      const ACTIVE_CLASS = "is-active";
+      const NO_SCROLL = "no-scroll";
+      const ID = "data-ix-popup-id";
+      const triggers = gsap.utils.toArray(TRIGGER);
+      const modals = gsap.utils.toArray(MODAL);
+      const body = document.querySelector("body");
+      if (triggers.length === 0 || modals.length === 0)
+        return;
+      const modalTimeline = function(modal) {
+        const closeBtn = modal.querySelector(CLOSE);
+        const layout = modal.querySelector(MODAL_LAYOUT);
+        const overlay = modal.querySelector(OVERLAY);
+        if (!closeBtn || !layout || !overlay)
+          return;
+        const tl = gsap.timeline({
+          paused: true,
+          defaults: {
+            duration: 0.6,
+            ease: "power1.out"
+          }
+        });
+        tl.set(modal, { display: "none" });
+        tl.set(modal, { display: "block" });
+        tl.fromTo(layout, { xPercent: 100 }, { xPercent: 0 });
+        tl.fromTo(overlay, { opacity: 0 }, { opacity: 1 }, "<");
+        return tl;
+      };
+      const openModal = function(modal, tl, open = true) {
+        if (open) {
+          tl.restart();
+          modal.classList.add(ACTIVE_CLASS);
+          body.classList.add(NO_SCROLL);
+        } else {
+          modal.classList.remove(ACTIVE_CLASS);
+          body.classList.remove(NO_SCROLL);
+          tl.reverse();
+        }
+      };
+      function findModal(modals2, itemId) {
+        for (let i2 = 0; i2 < modals2.length; i2++) {
+          if (modals2[i2].getAttribute("data-ix-popup-id") === itemId) {
+            return modals2[i2];
+          }
+        }
+        return null;
+      }
+      triggers.forEach((trigger) => {
+        const itemID = trigger.getAttribute(ID);
+        const modal = findModal(modals, itemID);
+        if (!modal)
+          return;
+        const closeBtn = modal.querySelector(CLOSE);
+        const overlay = modal.querySelector(OVERLAY);
+        if (!closeBtn || !overlay)
+          return;
+        console.log(modal);
+        const tl = modalTimeline(modal);
+        trigger.addEventListener("click", function() {
+          openModal(modal, tl, true);
+        });
+        overlay.addEventListener("click", function() {
+          openModal(modal, tl, false);
+        });
+        closeBtn.addEventListener("click", function() {
+          openModal(modal, tl, false);
+        });
+        window.addEventListener("keydown", (e) => {
+          if (e.key == "Escape") {
+            e.preventDefault();
+            openModal(modal, tl, false);
+          }
+        });
+      });
+    };
     const approachHero = function() {
       const H1 = '[data-ix-approachhero="h1"]';
       const ACTIVE_CLASS = "is-active";
@@ -7439,12 +7523,14 @@
             next: {
               translate: ["60%", 0, 0],
               rotate: [0, -75, 0],
-              opacity: 0
+              opacity: 0,
+              scale: 0.75
             },
             prev: {
               translate: ["-60%", 0, 0],
               rotate: [0, 75, 0],
-              opacity: 0
+              opacity: 0,
+              scale: 0.75
             }
           },
           pagination: {
@@ -7481,6 +7567,7 @@
           missionText();
           approachHero();
           approachCTA();
+          teamModal();
           navColorScroll();
           homeInvestmentsSlider();
           approachTestimonialSlider();
