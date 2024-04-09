@@ -7,7 +7,7 @@ import { parallax } from './interactions/parallax';
 import { scrollIn } from './interactions/scrollIn';
 import { scrolling } from './interactions/scrolling';
 import Swiper from 'swiper';
-import { Navigation, Pagination, EffectCreative } from 'swiper/modules';
+import { Navigation, Autoplay, Pagination, EffectCreative } from 'swiper/modules';
 
 document.addEventListener('DOMContentLoaded', function () {
   // Comment out for production
@@ -156,6 +156,44 @@ document.addEventListener('DOMContentLoaded', function () {
 
   //////////////////////////////
   //Animations
+
+  const focusText = function () {
+    const TEXT_ITEM = '[data-ix-focus="text"]';
+    const IMAGE_ITEM = '[data-ix-focus="image"]';
+    const ACTIVE_CLASS = 'is-active';
+
+    const textLinks = gsap.utils.toArray(TEXT_ITEM);
+    const images = gsap.utils.toArray(IMAGE_ITEM);
+    if (textLinks.length === 0 || images.length === 0) return;
+    //utility function to activate active items
+    const activateItems = function (activeIndex) {
+      //remove all text and image active classes
+      textLinks.forEach((item, index) => {
+        console.log(item.classList, index);
+        if (index === activeIndex) {
+          item.classList.add(ACTIVE_CLASS);
+        } else {
+          item.classList.remove(ACTIVE_CLASS);
+        }
+      });
+      images.forEach((item, index) => {
+        if (index === activeIndex) {
+          item.classList.add(ACTIVE_CLASS);
+        } else {
+          item.classList.remove(ACTIVE_CLASS);
+        }
+      });
+    };
+    console.log(textLinks.length);
+    //activate the first item on load
+    activateItems(0);
+    // listen for click events to activate items
+    textLinks.forEach((textItem, textIndex) => {
+      textItem.addEventListener('click', (event) => {
+        activateItems(textIndex);
+      });
+    });
+  };
   const missionText = function () {
     const WRAP = '[data-ix-mission="wrap"]';
     const TEXT = '[data-ix-mission="text"]';
@@ -437,44 +475,36 @@ document.addEventListener('DOMContentLoaded', function () {
     //animation options
     const DURATION = 0.8;
     const DURATION_MS = DURATION * 1000;
-    //function to animate text
-    const updateText = function (swiper, list) {
-      const activeIndex = swiper.activeIndex;
-      list.forEach((item, index) => {
+
+    //Utility function to activate perspective slides
+    const clickListener = function (swiper, headings, subHeadings) {
+      headings.forEach((heading, index) => {
+        heading.addEventListener('click', (event) => {
+          swiper.slideToLoop(index, DURATION_MS, true);
+        });
+      });
+    };
+    const updateText = function (headings, subHeadings, activeIndex) {
+      headings.forEach((item, index) => {
         if (index === activeIndex) {
           item.classList.add(activeClass);
-          gsap.fromTo(
-            item,
-            {
-              y: '2rem',
-              opacity: 0,
-            },
-            {
-              y: '0rem',
-              opacity: 1,
-              delay: 0.2,
-              duration: 0.6,
-              ease: 'power1.out',
-            }
-          );
         } else {
           item.classList.remove(activeClass);
-          gsap.to(item, {
-            y: '-2rem',
-            opacity: 0,
-            duration: 0.6,
-            ease: 'power1.out',
-          });
+        }
+      });
+      subHeadings.forEach((item, index) => {
+        if (index === activeIndex) {
+          item.classList.add(activeClass);
+        } else {
+          item.classList.remove(activeClass);
         }
       });
     };
     //Utility function to activate perspective slides
     const activateSlides = function (swiper) {
       const activeIndex = swiper.activeIndex;
-      // console.log(activeIndex);
       //remove before and after classes
       swiper.slides.forEach((slide, index) => {
-        // console.log('item index:', index);
         //remove previous and next class
         slide.classList.remove(beforeClass);
         slide.classList.remove(afterClass);
@@ -487,7 +517,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       });
     };
-    const changeSlide = function (swiper, activeIndex) {};
 
     //get swipers
     const swipers = gsap.utils.toArray(SWIPER);
@@ -499,25 +528,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
       if (!imageSwiperWrap) return;
       const imageSwiper = new Swiper(imageSwiperWrap, {
-        modules: [EffectCreative],
-        slidesPerView: 'auto',
-        // spaceBetween: '-5%',
+        modules: [Autoplay, EffectCreative],
+        slidesPerView: 1,
+        loop: true,
         speed: DURATION_MS,
         normalizeSlideIndex: true,
-        // initialSlide: 0,
-        // loopAdditionalSlides: 5,
         allowTouchMove: false,
+        autoplay: { delay: 3000 },
         effect: 'creative',
         creativeEffect: {
           perspective: false,
           limitProgress: 10,
           next: {
-            // Array with translate X, Y and Z values
-            translate: ['75%', 0, 0],
+            translate: ['12vw', 0, 0],
           },
           prev: {
-            // Array with translate X, Y and Z values
-            translate: ['-75%', 0, 0],
+            translate: ['-12vw', 0, 0],
           },
         },
         slideActiveClass: activeClass,
@@ -527,12 +553,17 @@ document.addEventListener('DOMContentLoaded', function () {
         on: {
           afterInit: function (imageSwiper) {
             activateSlides(imageSwiper);
+            updateText(headings, subHeadings, imageSwiper.activeIndex);
           },
           slideChangeTransitionStart: function (imageSwiper) {
             activateSlides(imageSwiper);
+            updateText(headings, subHeadings, imageSwiper.activeIndex);
           },
         },
       });
+      // imageSwiper.start();
+
+      clickListener(imageSwiper, headings, subHeadings);
     });
   };
 
@@ -543,18 +574,15 @@ document.addEventListener('DOMContentLoaded', function () {
     const nextButton = '.swiper-next';
     const previousButton = '.swiper-prev';
     const bulletsWrapClass = '.swiper-bullet-wrapper';
-
     //class options
     const activeClass = 'is-active';
     const disabledClass = 'is-disabled';
-
     //get swipers
     const swipers = gsap.utils.toArray(SWIPER);
     swipers.forEach(function (swiper) {
       if (!swiper) return;
       const swiperList = swiper.querySelector(SWIPER_LIST_WRAP);
-
-      //get navication sliderLists
+      //get navigation elements
       const nextButtonEl = swiper.querySelector(nextButton);
       const previousButtonEl = swiper.querySelector(previousButton);
       const bulletWrapEl = swiper.querySelector(bulletsWrapClass);
@@ -695,6 +723,7 @@ document.addEventListener('DOMContentLoaded', function () {
         accordion(gsapContext);
         hoverActive(gsapContext);
         //Custom Animations
+        focusText();
         missionText();
         approachHero();
         approachCTA();
