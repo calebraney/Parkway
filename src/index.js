@@ -169,7 +169,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const activateItems = function (activeIndex) {
       //remove all text and image active classes
       textLinks.forEach((item, index) => {
-        console.log(item.classList, index);
         if (index === activeIndex) {
           item.classList.add(ACTIVE_CLASS);
         } else {
@@ -184,7 +183,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       });
     };
-    console.log(textLinks.length);
     //activate the first item on load
     activateItems(0);
     // listen for click events to activate items
@@ -419,8 +417,7 @@ document.addEventListener('DOMContentLoaded', function () {
     //selectors
     const SWIPER = '.home_investments_slider';
     const SWIPER_LIST_WRAP = '.investments_slider_list_wrap';
-    const HEADING_ITEM = '.investments_heading_item';
-    const SUBHEADING_ITEM = '.investments_sub_item';
+    const TEXT_ITEM = '.investments_text_item';
     const nextButton = '.swiper-next';
     const previousButton = '.swiper-prev';
     //class options
@@ -432,14 +429,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const disabledClass = 'is-disabled';
     //function to animate text
     const updateText = function (swiper, list) {
-      const activeIndex = swiper.activeIndex;
+      //get real index considering loop mode
+      const activeIndex = swiper.realIndex;
       list.forEach((item, index) => {
+        const textElements = item.children;
         if (index === activeIndex) {
           item.classList.add(activeClass);
           gsap.fromTo(
-            item,
+            textElements,
             {
-              y: '2rem',
+              y: '1rem',
               opacity: 0,
             },
             {
@@ -448,15 +447,17 @@ document.addEventListener('DOMContentLoaded', function () {
               delay: 0.2,
               duration: 0.6,
               ease: 'power1.out',
+              stagger: { each: 0.1, from: 'start' },
             }
           );
         } else {
           item.classList.remove(activeClass);
-          gsap.to(item, {
-            y: '-2rem',
+          gsap.to(textElements, {
+            y: '-1rem',
             opacity: 0,
-            duration: 0.6,
+            duration: 0.4,
             ease: 'power1.out',
+            stagger: { each: 0.1, from: 'start' },
           });
         }
       });
@@ -486,8 +487,7 @@ document.addEventListener('DOMContentLoaded', function () {
     swipers.forEach(function (swiper) {
       if (!swiper) return;
       const imageSwiperWrap = swiper.querySelector(SWIPER_LIST_WRAP);
-      const headings = swiper.querySelectorAll(HEADING_ITEM);
-      const subHeadings = swiper.querySelectorAll(SUBHEADING_ITEM);
+      const textItems = swiper.querySelectorAll(TEXT_ITEM);
 
       //get navication sliderLists
       const nextButtonEl = swiper.querySelector(nextButton);
@@ -535,13 +535,11 @@ document.addEventListener('DOMContentLoaded', function () {
         on: {
           afterInit: function (imageSwiper) {
             activateSlides(imageSwiper);
-            updateText(imageSwiper, headings);
-            updateText(imageSwiper, subHeadings);
+            updateText(imageSwiper, textItems);
           },
           slideChangeTransitionStart: function (imageSwiper) {
             activateSlides(imageSwiper);
-            updateText(imageSwiper, headings);
-            updateText(imageSwiper, subHeadings);
+            updateText(imageSwiper, textItems);
           },
         },
       });

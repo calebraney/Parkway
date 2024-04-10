@@ -10,10 +10,10 @@ export const scrolling = function (gsapContext) {
   //timeline options
   const START = 'data-ix-scrolling-start';
   const END = 'data-ix-scrolling-end';
-  const TABLET_START = 'data-ix-scrolling-tablet-start';
-  const TABLET_END = 'data-ix-scrolling-tablet-end';
-  const MOBILE_START = 'data-ix-scrolling-mobile-start';
-  const MOBILE_END = 'data-ix-scrolling-mobile-end';
+  const TABLET_START = 'data-ix-scrolling-start-tablet';
+  const TABLET_END = 'data-ix-scrolling-end-tablet';
+  const MOBILE_START = 'data-ix-scrolling-start-mobile';
+  const MOBILE_END = 'data-ix-scrolling-end-mobile';
   const SCRUB = 'data-ix-scrolling-scrub';
   //tween options
   const POSITION = 'data-ix-scrolling-position'; // sequential by default, use "<" to start tweens together

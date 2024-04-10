@@ -1399,10 +1399,10 @@
     const LAYER = '[data-ix-scrolling="layer"]';
     const START = "data-ix-scrolling-start";
     const END = "data-ix-scrolling-end";
-    const TABLET_START = "data-ix-scrolling-tablet-start";
-    const TABLET_END = "data-ix-scrolling-tablet-end";
-    const MOBILE_START = "data-ix-scrolling-mobile-start";
-    const MOBILE_END = "data-ix-scrolling-mobile-end";
+    const TABLET_START = "data-ix-scrolling-start-tablet";
+    const TABLET_END = "data-ix-scrolling-end-tablet";
+    const MOBILE_START = "data-ix-scrolling-start-mobile";
+    const MOBILE_END = "data-ix-scrolling-end-mobile";
     const SCRUB = "data-ix-scrolling-scrub";
     const POSITION = "data-ix-scrolling-position";
     const X_START = "data-ix-scrolling-x-start";
@@ -7071,7 +7071,6 @@
         return;
       const activateItems = function(activeIndex) {
         textLinks.forEach((item, index) => {
-          console.log(item.classList, index);
           if (index === activeIndex) {
             item.classList.add(ACTIVE_CLASS);
           } else {
@@ -7086,7 +7085,6 @@
           }
         });
       };
-      console.log(textLinks.length);
       activateItems(0);
       textLinks.forEach((textItem, textIndex) => {
         textItem.addEventListener("click", (event2) => {
@@ -7295,8 +7293,7 @@
     const homeInvestmentsSlider = function() {
       const SWIPER = ".home_investments_slider";
       const SWIPER_LIST_WRAP = ".investments_slider_list_wrap";
-      const HEADING_ITEM = ".investments_heading_item";
-      const SUBHEADING_ITEM = ".investments_sub_item";
+      const TEXT_ITEM = ".investments_text_item";
       const nextButton = ".swiper-next";
       const previousButton = ".swiper-prev";
       const activeClass = "is-active";
@@ -7306,14 +7303,15 @@
       const beforeClass = "is-before";
       const disabledClass = "is-disabled";
       const updateText = function(swiper, list) {
-        const activeIndex = swiper.activeIndex;
+        const activeIndex = swiper.realIndex;
         list.forEach((item, index) => {
+          const textElements = item.children;
           if (index === activeIndex) {
             item.classList.add(activeClass);
             gsap.fromTo(
-              item,
+              textElements,
               {
-                y: "2rem",
+                y: "1rem",
                 opacity: 0
               },
               {
@@ -7321,16 +7319,18 @@
                 opacity: 1,
                 delay: 0.2,
                 duration: 0.6,
-                ease: "power1.out"
+                ease: "power1.out",
+                stagger: { each: 0.1, from: "start" }
               }
             );
           } else {
             item.classList.remove(activeClass);
-            gsap.to(item, {
-              y: "-2rem",
+            gsap.to(textElements, {
+              y: "-1rem",
               opacity: 0,
-              duration: 0.6,
-              ease: "power1.out"
+              duration: 0.4,
+              ease: "power1.out",
+              stagger: { each: 0.1, from: "start" }
             });
           }
         });
@@ -7353,8 +7353,7 @@
         if (!swiper)
           return;
         const imageSwiperWrap = swiper.querySelector(SWIPER_LIST_WRAP);
-        const headings = swiper.querySelectorAll(HEADING_ITEM);
-        const subHeadings = swiper.querySelectorAll(SUBHEADING_ITEM);
+        const textItems = swiper.querySelectorAll(TEXT_ITEM);
         const nextButtonEl = swiper.querySelector(nextButton);
         const previousButtonEl = swiper.querySelector(previousButton);
         if (!nextButtonEl || !previousButtonEl || !imageSwiperWrap)
@@ -7395,13 +7394,11 @@
           on: {
             afterInit: function(imageSwiper2) {
               activateSlides(imageSwiper2);
-              updateText(imageSwiper2, headings);
-              updateText(imageSwiper2, subHeadings);
+              updateText(imageSwiper2, textItems);
             },
             slideChangeTransitionStart: function(imageSwiper2) {
               activateSlides(imageSwiper2);
-              updateText(imageSwiper2, headings);
-              updateText(imageSwiper2, subHeadings);
+              updateText(imageSwiper2, textItems);
             }
           }
         });
