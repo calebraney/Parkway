@@ -801,25 +801,11 @@
     const ACTIVE_CLASS = "is-active";
     const accordionLists = gsap.utils.toArray(ACCORDION_WRAP);
     const openAccordion = function(item, open = true) {
-      const bottom = item.querySelector(ACCORDION_BOTTOM);
-      const state = Flip.getState(...[item, bottom], {
-        nested: true,
-        absolute: true
-      });
       if (open === true) {
         item.classList.add(ACTIVE_CLASS);
       } else {
         item.classList.remove(ACTIVE_CLASS);
       }
-      Flip.from(state, {
-        duration: 0.6,
-        ease: "power1.out",
-        onStart: () => {
-        },
-        onComplete: () => {
-          ScrollTrigger.refresh();
-        }
-      });
     };
     if (accordionLists.length === 0 || accordionLists === void 0)
       return;

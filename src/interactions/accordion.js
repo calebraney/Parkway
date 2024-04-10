@@ -19,27 +19,11 @@ export const accordion = function (gsapContext) {
 
   // utility function to open or close accordions
   const openAccordion = function (item, open = true) {
-    const bottom = item.querySelector(ACCORDION_BOTTOM);
-    //get state of items
-    const state = Flip.getState(...[item, bottom], {
-      //   props: '',
-      nested: true,
-      absolute: true,
-    });
     if (open === true) {
       item.classList.add(ACTIVE_CLASS);
     } else {
       item.classList.remove(ACTIVE_CLASS);
     }
-    // animate elements
-    Flip.from(state, {
-      duration: 0.6,
-      ease: 'power1.out',
-      onStart: () => {},
-      onComplete: () => {
-        ScrollTrigger.refresh();
-      },
-    });
   };
   ////////////////////////
   // event logic
