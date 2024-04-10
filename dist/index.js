@@ -1394,54 +1394,71 @@
   // src/interactions/scrolling.js
   var scrolling = function(gsapContext) {
     const ANIMATION_ID = "scrolling";
-    const SCROLLING_WRAP = `[data-ix-scrolling="wrap"]`;
-    const SCROLLING_TRIGGER = `[data-ix-scrolling="trigger"]`;
-    const SCROLLING_LAYER = '[data-ix-scrolling="layer"]';
-    const SCROLLING_START = "data-ix-scrolling-start";
-    const SCROLLING_END = "data-ix-scrolling-end";
-    const SCROLLING_SCRUB = "data-ix-scrolling-scrub";
-    const SCROLLING_POSITION = "data-ix-scrolling-position";
-    const SCROLLING_X_START = "data-ix-scrolling-x-start";
-    const SCROLLING_X_END = "data-ix-scrolling-x-end";
-    const SCROLLING_Y_START = "data-ix-scrolling-y-start";
-    const SCROLLING_Y_END = "data-ix-scrolling-y-end";
-    const SCROLLING_SCALE_START = "data-ix-scrolling-scale-start";
-    const SCROLLING_SCALE_END = "data-ix-scrolling-scale-end";
-    const SCROLLING_WIDTH_START = "data-ix-scrolling-width-start";
-    const SCROLLING_WIDTH_END = "data-ix-scrolling-width-end";
-    const SCROLLING_HEIGHT_START = "data-ix-scrolling-height-start";
-    const SCROLLING_HEIGHT_END = "data-ix-scrolling-height-end";
-    const SCROLLING_ROTATE_X_START = "data-ix-scrolling-rotate-x-start";
-    const SCROLLING_ROTATE_X_END = "data-ix-scrolling-rotate-x-end";
-    const SCROLLING_ROTATE_Y_START = "data-ix-scrolling-rotate-y-start";
-    const SCROLLING_ROTATE_Y_END = "data-ix-scrolling-rotate-y-end";
-    const SCROLLING_ROTATE_Z_START = "data-ix-scrolling-rotate-z-start";
-    const SCROLLING_ROTATE_Z_END = "data-ix-scrolling-rotate-z-end";
-    const SCROLLING_OPACITY_START = "data-ix-scrolling-opacity-start";
-    const SCROLLING_OPACITY_END = "data-ix-scrolling-opacity-end";
-    const SCROLLING_CLIP_START = "data-ix-scrolling-clip-start";
-    const SCROLLING_CLIP_END = "data-ix-scrolling-clip-end";
-    const SCROLLING_CLIP_TYPE = "data-ix-scrolling-clip-type";
-    const scrollingItems = gsap.utils.toArray(SCROLLING_WRAP);
+    const WRAP = `[data-ix-scrolling="wrap"]`;
+    const TRIGGER = `[data-ix-scrolling="trigger"]`;
+    const LAYER = '[data-ix-scrolling="layer"]';
+    const START = "data-ix-scrolling-start";
+    const END = "data-ix-scrolling-end";
+    const TABLET_START = "data-ix-scrolling-tablet-start";
+    const TABLET_END = "data-ix-scrolling-tablet-end";
+    const MOBILE_START = "data-ix-scrolling-mobile-start";
+    const MOBILE_END = "data-ix-scrolling-mobile-end";
+    const SCRUB = "data-ix-scrolling-scrub";
+    const POSITION = "data-ix-scrolling-position";
+    const X_START = "data-ix-scrolling-x-start";
+    const X_END = "data-ix-scrolling-x-end";
+    const Y_START = "data-ix-scrolling-y-start";
+    const Y_END = "data-ix-scrolling-y-end";
+    const SCALE_START = "data-ix-scrolling-scale-start";
+    const SCALE_END = "data-ix-scrolling-scale-end";
+    const WIDTH_START = "data-ix-scrolling-width-start";
+    const WIDTH_END = "data-ix-scrolling-width-end";
+    const HEIGHT_START = "data-ix-scrolling-height-start";
+    const HEIGHT_END = "data-ix-scrolling-height-end";
+    const ROTATE_X_START = "data-ix-scrolling-rotate-x-start";
+    const ROTATE_X_END = "data-ix-scrolling-rotate-x-end";
+    const ROTATE_Y_START = "data-ix-scrolling-rotate-y-start";
+    const ROTATE_Y_END = "data-ix-scrolling-rotate-y-end";
+    const ROTATE_Z_START = "data-ix-scrolling-rotate-z-start";
+    const ROTATE_Z_END = "data-ix-scrolling-rotate-z-end";
+    const OPACITY_START = "data-ix-scrolling-opacity-start";
+    const OPACITY_END = "data-ix-scrolling-opacity-end";
+    const CLIP_START = "data-ix-scrolling-clip-start";
+    const CLIP_END = "data-ix-scrolling-clip-end";
+    const CLIP_TYPE = "data-ix-scrolling-clip-type";
+    const scrollingItems = gsap.utils.toArray(WRAP);
     scrollingItems.forEach((scrollingItem) => {
-      const layers = scrollingItem.querySelectorAll(SCROLLING_LAYER);
+      const layers = scrollingItem.querySelectorAll(LAYER);
       if (!scrollingItem || layers.length === 0)
         return;
-      let trigger = scrollingItem.querySelector(SCROLLING_TRIGGER);
+      let trigger = scrollingItem.querySelector(TRIGGER);
       if (!trigger) {
         trigger = scrollingItem;
       }
       let runOnBreakpoint = checkBreakpoints(scrollingItem, ANIMATION_ID, gsapContext);
       if (runOnBreakpoint === false)
         return;
+      let { isMobile, isTablet, isDesktop, reduceMotion } = gsapContext.conditions;
       const tlSettings = {
         scrub: 0.5,
         start: "top bottom",
         end: "bottom top"
       };
-      tlSettings.start = attr2(tlSettings.start, scrollingItem.getAttribute(SCROLLING_START));
-      tlSettings.end = attr2(tlSettings.end, scrollingItem.getAttribute(SCROLLING_END));
-      tlSettings.scrub = attr2(tlSettings.scrub, scrollingItem.getAttribute(SCROLLING_SCRUB));
+      tlSettings.start = attr2(tlSettings.start, scrollingItem.getAttribute(START));
+      tlSettings.end = attr2(tlSettings.end, scrollingItem.getAttribute(END));
+      tlSettings.scrub = attr2(tlSettings.scrub, scrollingItem.getAttribute(SCRUB));
+      if (isTablet && scrollingItem.getAttribute(TABLET_START)) {
+        tlSettings.start = attr2(tlSettings.start, scrollingItem.getAttribute(TABLET_START));
+      }
+      if (isTablet && scrollingItem.getAttribute(TABLET_END)) {
+        tlSettings.start = attr2(tlSettings.start, scrollingItem.getAttribute(TABLET_END));
+      }
+      if (isMobile && scrollingItem.getAttribute(MOBILE_START)) {
+        tlSettings.start = attr2(tlSettings.start, scrollingItem.getAttribute(MOBILE_START));
+      }
+      if (isMobile && scrollingItem.getAttribute(MOBILE_END)) {
+        tlSettings.start = attr2(tlSettings.start, scrollingItem.getAttribute(MOBILE_END));
+      }
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger,
@@ -1469,27 +1486,27 @@
             return;
           }
         };
-        varsFrom.x = processAttribute(SCROLLING_X_START, "0%");
-        varsTo.x = processAttribute(SCROLLING_X_END, "0%");
-        varsFrom.y = processAttribute(SCROLLING_Y_START, "0%");
-        varsTo.y = processAttribute(SCROLLING_Y_END, "0%");
-        varsFrom.scale = processAttribute(SCROLLING_SCALE_START, 1);
-        varsTo.scale = processAttribute(SCROLLING_SCALE_END, 1);
-        varsFrom.width = processAttribute(SCROLLING_WIDTH_START, "0%");
-        varsTo.width = processAttribute(SCROLLING_WIDTH_END, "0%");
-        varsFrom.height = processAttribute(SCROLLING_HEIGHT_START, "0%");
-        varsTo.height = processAttribute(SCROLLING_HEIGHT_END, "0%");
-        varsFrom.rotateX = processAttribute(SCROLLING_ROTATE_X_START, 0);
-        varsTo.rotateX = processAttribute(SCROLLING_ROTATE_X_END, 0);
-        varsFrom.rotateY = processAttribute(SCROLLING_ROTATE_Y_START, 0);
-        varsTo.rotateY = processAttribute(SCROLLING_ROTATE_Y_END, 0);
-        varsFrom.rotateZ = processAttribute(SCROLLING_ROTATE_Z_START, 0);
-        varsTo.rotateZ = processAttribute(SCROLLING_ROTATE_Z_END, 0);
-        varsFrom.opacity = processAttribute(SCROLLING_OPACITY_START, 0);
-        varsTo.opacity = processAttribute(SCROLLING_OPACITY_END, 0);
-        varsFrom.clipPath = processAttribute(SCROLLING_CLIP_START, "string");
-        varsTo.clipPath = processAttribute(SCROLLING_CLIP_END, "string");
-        const position = attr2("<", layer.getAttribute(SCROLLING_POSITION));
+        varsFrom.x = processAttribute(X_START, "0%");
+        varsTo.x = processAttribute(X_END, "0%");
+        varsFrom.y = processAttribute(Y_START, "0%");
+        varsTo.y = processAttribute(Y_END, "0%");
+        varsFrom.scale = processAttribute(SCALE_START, 1);
+        varsTo.scale = processAttribute(SCALE_END, 1);
+        varsFrom.width = processAttribute(WIDTH_START, "0%");
+        varsTo.width = processAttribute(WIDTH_END, "0%");
+        varsFrom.height = processAttribute(HEIGHT_START, "0%");
+        varsTo.height = processAttribute(HEIGHT_END, "0%");
+        varsFrom.rotateX = processAttribute(ROTATE_X_START, 0);
+        varsTo.rotateX = processAttribute(ROTATE_X_END, 0);
+        varsFrom.rotateY = processAttribute(ROTATE_Y_START, 0);
+        varsTo.rotateY = processAttribute(ROTATE_Y_END, 0);
+        varsFrom.rotateZ = processAttribute(ROTATE_Z_START, 0);
+        varsTo.rotateZ = processAttribute(ROTATE_Z_END, 0);
+        varsFrom.opacity = processAttribute(OPACITY_START, 0);
+        varsTo.opacity = processAttribute(OPACITY_END, 0);
+        varsFrom.clipPath = processAttribute(CLIP_START, "string");
+        varsTo.clipPath = processAttribute(CLIP_END, "string");
+        const position = attr2("<", layer.getAttribute(POSITION));
         let fromTween = tl.fromTo(layer, varsFrom, varsTo, position);
       });
     });
