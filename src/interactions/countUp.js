@@ -4,16 +4,17 @@ import { attr, checkBreakpoints } from '../utilities';
 export const countUp = function (gsapContext) {
   //animation ID
   const ANIMATION_ID = 'countup';
+  //selectors
+  const ITEM = '[data-ix-countup="item"]';
   //options
-  const SCROLLING_START = 'data-ix-scrolling-start';
-  const SCROLLING_DURATION = 'data-ix-scrolling-duration';
-  const SCROLLING_ACTIVE = 'data-ix-scrolling-active';
+  const START = 'data-ix-countup-start';
+  const DURATION = 'data-ix-countup-duration';
+  const ACTIVE = 'data-ix-countup-active';
 
   const ACTIVE_CLASS = 'is-active';
-  //selectors
-  const COUNT_WRAP = '[data-ix-countup="item"]';
+
   //elements
-  const items = document.querySelectorAll(COUNT_WRAP);
+  const items = document.querySelectorAll(ITEM);
   items.forEach((item) => {
     const parent = item.parentElement;
     //check breakpoints and quit function if set on specific breakpoints
@@ -25,9 +26,9 @@ export const countUp = function (gsapContext) {
     //check for decimal points
     decimalPoints = countDecimalPoints(number);
     //proccess options
-    let duration = attr(2.5, item.getAttribute(SCROLLING_DURATION));
-    let start = attr('top bottom', item.getAttribute(SCROLLING_START));
-    let activeClass = attr(ACTIVE_CLASS, item.getAttribute(SCROLLING_ACTIVE));
+    let duration = attr(2.5, item.getAttribute(DURATION));
+    let start = attr('top bottom', item.getAttribute(START));
+    let activeClass = attr(ACTIVE_CLASS, item.getAttribute(ACTIVE));
 
     //count up function
     const countUp = new CountUp(item, number, {

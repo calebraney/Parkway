@@ -980,12 +980,12 @@
   // src/interactions/countUp.js
   var countUp = function(gsapContext) {
     const ANIMATION_ID = "countup";
-    const SCROLLING_START = "data-ix-scrolling-start";
-    const SCROLLING_DURATION = "data-ix-scrolling-duration";
-    const SCROLLING_ACTIVE = "data-ix-scrolling-active";
+    const ITEM = '[data-ix-countup="item"]';
+    const START = "data-ix-countup-start";
+    const DURATION = "data-ix-countup-duration";
+    const ACTIVE = "data-ix-countup-active";
     const ACTIVE_CLASS = "is-active";
-    const COUNT_WRAP = '[data-ix-countup="item"]';
-    const items = document.querySelectorAll(COUNT_WRAP);
+    const items = document.querySelectorAll(ITEM);
     items.forEach((item) => {
       const parent = item.parentElement;
       let runOnBreakpoint = checkBreakpoints(item, ANIMATION_ID, gsapContext);
@@ -995,9 +995,9 @@
       if (!number || Number.isNaN(number))
         return;
       decimalPoints = countDecimalPoints(number);
-      let duration = attr2(2.5, item.getAttribute(SCROLLING_DURATION));
-      let start = attr2("top bottom", item.getAttribute(SCROLLING_START));
-      let activeClass = attr2(ACTIVE_CLASS, item.getAttribute(SCROLLING_ACTIVE));
+      let duration = attr2(2.5, item.getAttribute(DURATION));
+      let start = attr2("top bottom", item.getAttribute(START));
+      let activeClass = attr2(ACTIVE_CLASS, item.getAttribute(ACTIVE));
       const countUp2 = new i(item, number, {
         useGrouping: false,
         decimalPlaces: decimalPoints,
