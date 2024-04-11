@@ -725,6 +725,119 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   };
 
+  const xSlider = function () {
+    //selectors
+    const SWIPER = '.x_slider';
+    const SWIPER_LIST_WRAP = '.x_slider_list_wrap';
+    const nextButton = '.swiper-next';
+    const previousButton = '.swiper-prev';
+    const bulletsWrapClass = '.swiper-bullet-wrapper';
+    //class options
+    const activeClass = 'is-active';
+    const nextClass = 'is-next';
+    const prevClass = 'is-prev';
+    const afterClass = 'is-after';
+    const beforeClass = 'is-before';
+    const disabledClass = 'is-disabled';
+
+    //Utility function to activate perspective slides
+    const activateSlides = function (swiper) {
+      const activeIndex = swiper.activeIndex;
+      swiper.slides.forEach((slide, index) => {
+        //remove previous and next class
+        slide.classList.remove(beforeClass);
+        slide.classList.remove(afterClass);
+        //check if before or active
+        if (index < activeIndex) {
+          slide.classList.add(beforeClass);
+        }
+        if (index > activeIndex) {
+          slide.classList.add(afterClass);
+        }
+      });
+    };
+
+    //get swipers
+    const swipers = gsap.utils.toArray(SWIPER);
+    swipers.forEach(function (swiper) {
+      if (!swiper) return;
+      const swiperWrap = swiper.querySelector(SWIPER_LIST_WRAP);
+
+      //get navication sliderLists
+      const nextButtonEl = swiper.querySelector(nextButton);
+      const previousButtonEl = swiper.querySelector(previousButton);
+      const bulletWrapEl = swiper.querySelector(bulletsWrapClass);
+
+      // if navigation sliderLists don't exist return
+      if (!nextButtonEl || !previousButtonEl || !swiperWrap) return;
+      const xSwiper = new Swiper(swiperWrap, {
+        modules: [Navigation, Pagination, EffectCreative],
+        slidesPerView: 'auto',
+        speed: 800,
+        centeredSlides: true,
+        loop: true,
+        normalizeSlideIndex: true,
+        loopAdditionalSlides: 1,
+        allowTouchMove: false,
+        effect: 'creative',
+        creativeEffect: {
+          perspective: false,
+          limitProgress: 5,
+          next: {
+            // Array with translate X, Y and Z values
+            translate: ['25%', 0, 0],
+          },
+          prev: {
+            // Array with translate X, Y and Z values
+            translate: ['-25%', 0, 0],
+          },
+        },
+        pagination: {
+          el: bulletWrapEl,
+          bulletActiveClass: activeClass,
+          bulletClass: 'swiper-bullet',
+          bulletElement: 'button',
+          clickable: false,
+        },
+        navigation: {
+          nextEl: nextButtonEl,
+          prevEl: previousButtonEl,
+          disabledClass: disabledClass,
+        },
+        slideActiveClass: activeClass,
+        slideDuplicateActiveClass: activeClass,
+        slideNextClass: nextClass,
+        slidePrevClass: prevClass,
+        on: {
+          afterInit: function (xSwiper) {
+            activateSlides(xSwiper);
+          },
+          slideChangeTransitionStart: function (xSwiper) {
+            activateSlides(xSwiper);
+          },
+        },
+      });
+      let windowWidth = window.innerWidth;
+      window.addEventListener('resize', function () {
+        if (window.innerWidth !== windowWidth) {
+          windowWidth = window.innerWidth;
+          setTimeout(() => {
+            xSwiper.update();
+            activateSlides(xSwiper);
+          }, 1000);
+        }
+      });
+      // let windowWidth = window.innerWidth;
+      // window.addEventListener('resize', function () {
+      //   if (window.innerWidth !== windowWidth) {
+      //     console.log('reload');
+      //     location.reload();
+      //   }
+      //   // gsapInit();
+      // });
+    });
+  };
+
   // const investmentsHeroSlider = function () {
   //   const sliderWrap = '.home_investments_slider.swiper';
   //   const nextButton = '.swiper-next';
@@ -820,6 +933,7 @@ document.addEventListener('DOMContentLoaded', function () {
         homeInvestmentsSlider();
         approachTestimonialSlider();
         portfolioSlider();
+        xSlider();
         //optional animations
         if (!reduceMotion) {
           mouseOver(gsapContext);

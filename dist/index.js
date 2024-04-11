@@ -7549,6 +7549,98 @@
         });
       });
     };
+    const xSlider = function() {
+      const SWIPER = ".x_slider";
+      const SWIPER_LIST_WRAP = ".x_slider_list_wrap";
+      const nextButton = ".swiper-next";
+      const previousButton = ".swiper-prev";
+      const bulletsWrapClass = ".swiper-bullet-wrapper";
+      const activeClass = "is-active";
+      const nextClass = "is-next";
+      const prevClass = "is-prev";
+      const afterClass = "is-after";
+      const beforeClass = "is-before";
+      const disabledClass = "is-disabled";
+      const activateSlides = function(swiper) {
+        const activeIndex = swiper.activeIndex;
+        swiper.slides.forEach((slide2, index) => {
+          slide2.classList.remove(beforeClass);
+          slide2.classList.remove(afterClass);
+          if (index < activeIndex) {
+            slide2.classList.add(beforeClass);
+          }
+          if (index > activeIndex) {
+            slide2.classList.add(afterClass);
+          }
+        });
+      };
+      const swipers = gsap.utils.toArray(SWIPER);
+      swipers.forEach(function(swiper) {
+        if (!swiper)
+          return;
+        const swiperWrap = swiper.querySelector(SWIPER_LIST_WRAP);
+        const nextButtonEl = swiper.querySelector(nextButton);
+        const previousButtonEl = swiper.querySelector(previousButton);
+        const bulletWrapEl = swiper.querySelector(bulletsWrapClass);
+        if (!nextButtonEl || !previousButtonEl || !swiperWrap)
+          return;
+        const xSwiper = new Swiper(swiperWrap, {
+          modules: [Navigation, Pagination, EffectCreative],
+          slidesPerView: "auto",
+          speed: 800,
+          centeredSlides: true,
+          loop: true,
+          normalizeSlideIndex: true,
+          loopAdditionalSlides: 1,
+          allowTouchMove: false,
+          effect: "creative",
+          creativeEffect: {
+            perspective: false,
+            limitProgress: 5,
+            next: {
+              translate: ["25%", 0, 0]
+            },
+            prev: {
+              translate: ["-25%", 0, 0]
+            }
+          },
+          pagination: {
+            el: bulletWrapEl,
+            bulletActiveClass: activeClass,
+            bulletClass: "swiper-bullet",
+            bulletElement: "button",
+            clickable: false
+          },
+          navigation: {
+            nextEl: nextButtonEl,
+            prevEl: previousButtonEl,
+            disabledClass
+          },
+          slideActiveClass: activeClass,
+          slideDuplicateActiveClass: activeClass,
+          slideNextClass: nextClass,
+          slidePrevClass: prevClass,
+          on: {
+            afterInit: function(xSwiper2) {
+              activateSlides(xSwiper2);
+            },
+            slideChangeTransitionStart: function(xSwiper2) {
+              activateSlides(xSwiper2);
+            }
+          }
+        });
+        let windowWidth = window.innerWidth;
+        window.addEventListener("resize", function() {
+          if (window.innerWidth !== windowWidth) {
+            windowWidth = window.innerWidth;
+            setTimeout(() => {
+              xSwiper.update();
+              activateSlides(xSwiper);
+            }, 1e3);
+          }
+        });
+      });
+    };
     const gsapInit = function() {
       let mm = gsap.matchMedia();
       mm.add(
@@ -7571,6 +7663,7 @@
           homeInvestmentsSlider();
           approachTestimonialSlider();
           portfolioSlider();
+          xSlider();
           if (!reduceMotion) {
             mouseOver(gsapContext);
             parallax(gsapContext);
