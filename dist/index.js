@@ -6943,7 +6943,6 @@
 
   // src/index.js
   document.addEventListener("DOMContentLoaded", function() {
-    console.log("Local Script Loaded");
     if (gsap.ScrollTrigger !== void 0) {
       gsap.registerPlugin(ScrollTrigger);
     }
@@ -7276,18 +7275,31 @@
         hoverTL.reverse();
       });
     };
+    const activeClass = "is-active";
+    const nextClass = "is-next";
+    const prevClass = "is-prev";
+    const afterClass = "is-after";
+    const beforeClass = "is-before";
+    const disabledClass = "is-disabled";
+    const activateSlides = function(swiper) {
+      const activeIndex = swiper.activeIndex;
+      swiper.slides.forEach((slide2, index) => {
+        slide2.classList.remove(beforeClass);
+        slide2.classList.remove(afterClass);
+        if (index < activeIndex) {
+          slide2.classList.add(beforeClass);
+        }
+        if (index > activeIndex) {
+          slide2.classList.add(afterClass);
+        }
+      });
+    };
     const homeInvestmentsSlider = function() {
       const SWIPER = ".home_investments_slider";
       const SWIPER_LIST_WRAP = ".investments_slider_list_wrap";
       const TEXT_ITEM = ".investments_text_item";
       const nextButton = ".swiper-next";
       const previousButton = ".swiper-prev";
-      const activeClass = "is-active";
-      const nextClass = "is-next";
-      const prevClass = "is-prev";
-      const afterClass = "is-after";
-      const beforeClass = "is-before";
-      const disabledClass = "is-disabled";
       const updateText = function(swiper, list) {
         const activeIndex = swiper.realIndex;
         list.forEach((item, index) => {
@@ -7318,19 +7330,6 @@
               ease: "power1.out",
               stagger: { each: 0.1, from: "start" }
             });
-          }
-        });
-      };
-      const activateSlides = function(swiper) {
-        const activeIndex = swiper.activeIndex;
-        swiper.slides.forEach((slide2, index) => {
-          slide2.classList.remove(beforeClass);
-          slide2.classList.remove(afterClass);
-          if (index < activeIndex) {
-            slide2.classList.add(beforeClass);
-          }
-          if (index > activeIndex) {
-            slide2.classList.add(afterClass);
           }
         });
       };
@@ -7395,11 +7394,6 @@
       const SWIPER_LIST_WRAP = ".portfolio_slider_list_wrap";
       const HEADING_ITEM = ".portfolio_heading_item";
       const SUBHEADING_ITEM = ".portfolio_sub_item";
-      const activeClass = "is-active";
-      const nextClass = "is-next";
-      const prevClass = "is-prev";
-      const afterClass = "is-after";
-      const beforeClass = "is-before";
       const DURATION = 0.8;
       const DURATION_MS = DURATION * 1e3;
       const clickListener = function(swiper, headings, subHeadings) {
@@ -7422,19 +7416,6 @@
             item.classList.add(activeClass);
           } else {
             item.classList.remove(activeClass);
-          }
-        });
-      };
-      const activateSlides = function(swiper) {
-        const activeIndex = swiper.activeIndex;
-        swiper.slides.forEach((slide2, index) => {
-          slide2.classList.remove(beforeClass);
-          slide2.classList.remove(afterClass);
-          if (index < activeIndex) {
-            slide2.classList.add(beforeClass);
-          }
-          if (index > activeIndex) {
-            slide2.classList.add(afterClass);
           }
         });
       };
@@ -7491,8 +7472,6 @@
       const nextButton = ".swiper-next";
       const previousButton = ".swiper-prev";
       const bulletsWrapClass = ".swiper-bullet-wrapper";
-      const activeClass = "is-active";
-      const disabledClass = "is-disabled";
       const swipers = gsap.utils.toArray(SWIPER);
       swipers.forEach(function(swiper) {
         if (!swiper)
@@ -7505,37 +7484,43 @@
           return;
         const testimonialSwiper = new Swiper(swiperList, {
           modules: [Navigation, Pagination, EffectCreative],
-          slidesPerView: 1,
+          slidesPerView: "auto",
           speed: 800,
           centeredSlides: true,
           loop: true,
+          loopAdditionalSlides: 1,
           normalizeSlideIndex: true,
           allowTouchMove: false,
-          followFinger: false,
-          freeMode: false,
-          updateOnMove: false,
-          draggable: true,
-          rewind: false,
           effect: "creative",
           creativeEffect: {
-            perspective: true,
-            limitProgress: 1,
-            next: {
-              translate: ["60%", 0, 0],
-              rotate: [0, -75, 0],
-              opacity: 0,
-              scale: 0.75
+            perspective: false,
+            limitProgress: 5
+          },
+          breakpoints: {
+            320: {
+              creativeEffect: {
+                next: {
+                  translate: ["12%", 0, 0]
+                },
+                prev: {
+                  translate: ["-12%", 0, 0]
+                }
+              }
             },
-            prev: {
-              translate: ["-60%", 0, 0],
-              rotate: [0, 75, 0],
-              opacity: 0,
-              scale: 0.75
+            768: {
+              creativeEffect: {
+                next: {
+                  translate: ["5%", 0, 0]
+                },
+                prev: {
+                  translate: ["-5%", 0, 0]
+                }
+              }
             }
           },
           pagination: {
-            el: bulletWrapEl,
             bulletActiveClass: activeClass,
+            el: bulletWrapEl,
             bulletClass: "swiper-bullet",
             bulletElement: "button",
             clickable: true
@@ -7546,7 +7531,17 @@
             disabledClass
           },
           slideActiveClass: activeClass,
-          slideDuplicateActiveClass: activeClass
+          slideDuplicateActiveClass: activeClass,
+          slideNextClass: nextClass,
+          slidePrevClass: prevClass,
+          on: {
+            afterInit: function(xSwiper) {
+              activateSlides(xSwiper);
+            },
+            slideChangeTransitionStart: function(xSwiper) {
+              activateSlides(xSwiper);
+            }
+          }
         });
       });
     };
@@ -7556,25 +7551,6 @@
       const nextButton = ".swiper-next";
       const previousButton = ".swiper-prev";
       const bulletsWrapClass = ".swiper-bullet-wrapper";
-      const activeClass = "is-active";
-      const nextClass = "is-next";
-      const prevClass = "is-prev";
-      const afterClass = "is-after";
-      const beforeClass = "is-before";
-      const disabledClass = "is-disabled";
-      const activateSlides = function(swiper) {
-        const activeIndex = swiper.activeIndex;
-        swiper.slides.forEach((slide2, index) => {
-          slide2.classList.remove(beforeClass);
-          slide2.classList.remove(afterClass);
-          if (index < activeIndex) {
-            slide2.classList.add(beforeClass);
-          }
-          if (index > activeIndex) {
-            slide2.classList.add(afterClass);
-          }
-        });
-      };
       const swipers = gsap.utils.toArray(SWIPER);
       swipers.forEach(function(swiper) {
         if (!swiper)

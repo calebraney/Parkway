@@ -10,9 +10,6 @@ import Swiper from 'swiper';
 import { Navigation, Autoplay, Pagination, EffectCreative } from 'swiper/modules';
 
 document.addEventListener('DOMContentLoaded', function () {
-  // Comment out for production
-  console.log('Local Script Loaded');
-
   // register gsap plugins if available
   if (gsap.ScrollTrigger !== undefined) {
     gsap.registerPlugin(ScrollTrigger);
@@ -413,6 +410,32 @@ document.addEventListener('DOMContentLoaded', function () {
   //////////////////////////////
   //swiper
 
+  //Global Swiper Variables and Functions
+
+  //class options
+  const activeClass = 'is-active';
+  const nextClass = 'is-next';
+  const prevClass = 'is-prev';
+  const afterClass = 'is-after';
+  const beforeClass = 'is-before';
+  const disabledClass = 'is-disabled';
+  //Utility function to activate perspective slides
+  const activateSlides = function (swiper) {
+    const activeIndex = swiper.activeIndex;
+    //remove before and after classes
+    swiper.slides.forEach((slide, index) => {
+      slide.classList.remove(beforeClass);
+      slide.classList.remove(afterClass);
+      //check if before or active
+      if (index < activeIndex) {
+        slide.classList.add(beforeClass);
+      }
+      if (index > activeIndex) {
+        slide.classList.add(afterClass);
+      }
+    });
+  };
+
   const homeInvestmentsSlider = function () {
     //selectors
     const SWIPER = '.home_investments_slider';
@@ -420,13 +443,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const TEXT_ITEM = '.investments_text_item';
     const nextButton = '.swiper-next';
     const previousButton = '.swiper-prev';
-    //class options
-    const activeClass = 'is-active';
-    const nextClass = 'is-next';
-    const prevClass = 'is-prev';
-    const afterClass = 'is-after';
-    const beforeClass = 'is-before';
-    const disabledClass = 'is-disabled';
+
     //function to animate text
     const updateText = function (swiper, list) {
       //get real index considering loop mode
@@ -459,25 +476,6 @@ document.addEventListener('DOMContentLoaded', function () {
             ease: 'power1.out',
             stagger: { each: 0.1, from: 'start' },
           });
-        }
-      });
-    };
-    //Utility function to activate perspective slides
-    const activateSlides = function (swiper) {
-      const activeIndex = swiper.activeIndex;
-      // console.log(activeIndex);
-      //remove before and after classes
-      swiper.slides.forEach((slide, index) => {
-        // console.log('item index:', index);
-        //remove previous and next class
-        slide.classList.remove(beforeClass);
-        slide.classList.remove(afterClass);
-        //check if before or active
-        if (index < activeIndex) {
-          slide.classList.add(beforeClass);
-        }
-        if (index > activeIndex) {
-          slide.classList.add(afterClass);
         }
       });
     };
@@ -552,12 +550,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const SWIPER_LIST_WRAP = '.portfolio_slider_list_wrap';
     const HEADING_ITEM = '.portfolio_heading_item';
     const SUBHEADING_ITEM = '.portfolio_sub_item';
-    //class options
-    const activeClass = 'is-active';
-    const nextClass = 'is-next';
-    const prevClass = 'is-prev';
-    const afterClass = 'is-after';
-    const beforeClass = 'is-before';
     //animation options
     const DURATION = 0.8;
     const DURATION_MS = DURATION * 1000;
@@ -583,23 +575,6 @@ document.addEventListener('DOMContentLoaded', function () {
           item.classList.add(activeClass);
         } else {
           item.classList.remove(activeClass);
-        }
-      });
-    };
-    //Utility function to activate perspective slides
-    const activateSlides = function (swiper) {
-      const activeIndex = swiper.activeIndex;
-      //remove before and after classes
-      swiper.slides.forEach((slide, index) => {
-        //remove previous and next class
-        slide.classList.remove(beforeClass);
-        slide.classList.remove(afterClass);
-        //check if before or active
-        if (index < activeIndex) {
-          slide.classList.add(beforeClass);
-        }
-        if (index > activeIndex) {
-          slide.classList.add(afterClass);
         }
       });
     };
@@ -655,6 +630,241 @@ document.addEventListener('DOMContentLoaded', function () {
   };
 
   const approachTestimonialSlider = function () {
+    //selectors
+    const SWIPER = '.testimonials_slider';
+    const SWIPER_LIST_WRAP = '.testimonials_list_wrap';
+    const nextButton = '.swiper-next';
+    const previousButton = '.swiper-prev';
+    const bulletsWrapClass = '.swiper-bullet-wrapper';
+
+    //get swipers
+    const swipers = gsap.utils.toArray(SWIPER);
+    swipers.forEach(function (swiper) {
+      if (!swiper) return;
+      const swiperList = swiper.querySelector(SWIPER_LIST_WRAP);
+      //get navigation elements
+      const nextButtonEl = swiper.querySelector(nextButton);
+      const previousButtonEl = swiper.querySelector(previousButton);
+      const bulletWrapEl = swiper.querySelector(bulletsWrapClass);
+
+      // if navigation sliderLists don't exist return
+      if (!nextButtonEl || !previousButtonEl || !swiperList) return;
+      const testimonialSwiper = new Swiper(swiperList, {
+        modules: [Navigation, Pagination, EffectCreative],
+        slidesPerView: 'auto',
+        speed: 800,
+        centeredSlides: true,
+        loop: true,
+        loopAdditionalSlides: 1,
+        normalizeSlideIndex: true,
+        allowTouchMove: false,
+        effect: 'creative',
+        creativeEffect: {
+          perspective: false,
+          limitProgress: 5,
+          // next: {
+          //   translate: ['5%', 0, 0],
+          // },
+          // prev: {
+          //   translate: ['-5%', 0, 0],
+          // },
+        },
+        breakpoints: {
+          // MOBILE when window width is >= 320px
+          320: {
+            creativeEffect: {
+              next: {
+                translate: ['12%', 0, 0],
+              },
+              prev: {
+                translate: ['-12%', 0, 0],
+              },
+            },
+          },
+          // DESKTOP - when window width is >= 768px
+          768: {
+            creativeEffect: {
+              next: {
+                translate: ['5%', 0, 0],
+              },
+              prev: {
+                translate: ['-5%', 0, 0],
+              },
+            },
+          },
+        },
+        pagination: {
+          bulletActiveClass: activeClass,
+          el: bulletWrapEl,
+          bulletClass: 'swiper-bullet',
+          bulletElement: 'button',
+          clickable: true,
+        },
+        navigation: {
+          nextEl: nextButtonEl,
+          prevEl: previousButtonEl,
+          disabledClass: disabledClass,
+        },
+        slideActiveClass: activeClass,
+        slideDuplicateActiveClass: activeClass,
+        slideNextClass: nextClass,
+        slidePrevClass: prevClass,
+        on: {
+          afterInit: function (xSwiper) {
+            activateSlides(xSwiper);
+          },
+          slideChangeTransitionStart: function (xSwiper) {
+            activateSlides(xSwiper);
+          },
+        },
+      });
+    });
+  };
+
+  const xSlider = function () {
+    //selectors
+    const SWIPER = '.x_slider';
+    const SWIPER_LIST_WRAP = '.x_slider_list_wrap';
+    const nextButton = '.swiper-next';
+    const previousButton = '.swiper-prev';
+    const bulletsWrapClass = '.swiper-bullet-wrapper';
+
+    //get swipers
+    const swipers = gsap.utils.toArray(SWIPER);
+    swipers.forEach(function (swiper) {
+      if (!swiper) return;
+      const swiperWrap = swiper.querySelector(SWIPER_LIST_WRAP);
+
+      //get navication sliderLists
+      const nextButtonEl = swiper.querySelector(nextButton);
+      const previousButtonEl = swiper.querySelector(previousButton);
+      const bulletWrapEl = swiper.querySelector(bulletsWrapClass);
+
+      // if navigation sliderLists don't exist return
+      if (!nextButtonEl || !previousButtonEl || !swiperWrap) return;
+      const xSwiper = new Swiper(swiperWrap, {
+        modules: [Navigation, Pagination, EffectCreative],
+        slidesPerView: 'auto',
+        speed: 800,
+        centeredSlides: true,
+        loop: true,
+        normalizeSlideIndex: true,
+        loopAdditionalSlides: 1,
+        allowTouchMove: false,
+        effect: 'creative',
+        creativeEffect: {
+          perspective: false,
+          limitProgress: 5,
+          next: {
+            translate: ['25%', 0, 0],
+          },
+          prev: {
+            translate: ['-25%', 0, 0],
+          },
+        },
+        pagination: {
+          el: bulletWrapEl,
+          bulletActiveClass: activeClass,
+          bulletClass: 'swiper-bullet',
+          bulletElement: 'button',
+          clickable: false,
+        },
+        navigation: {
+          nextEl: nextButtonEl,
+          prevEl: previousButtonEl,
+          disabledClass: disabledClass,
+        },
+        slideActiveClass: activeClass,
+        slideDuplicateActiveClass: activeClass,
+        slideNextClass: nextClass,
+        slidePrevClass: prevClass,
+        on: {
+          afterInit: function (xSwiper) {
+            activateSlides(xSwiper);
+          },
+          slideChangeTransitionStart: function (xSwiper) {
+            activateSlides(xSwiper);
+          },
+        },
+      });
+      let windowWidth = window.innerWidth;
+      window.addEventListener('resize', function () {
+        if (window.innerWidth !== windowWidth) {
+          windowWidth = window.innerWidth;
+          setTimeout(() => {
+            xSwiper.update();
+            activateSlides(xSwiper);
+          }, 1000);
+        }
+      });
+      // let windowWidth = window.innerWidth;
+      // window.addEventListener('resize', function () {
+      //   if (window.innerWidth !== windowWidth) {
+      //     console.log('reload');
+      //     location.reload();
+      //   }
+      //   // gsapInit();
+      // });
+    });
+  };
+
+  //////////////////////////////
+  //Control Functions on page load
+  const gsapInit = function () {
+    let mm = gsap.matchMedia();
+    mm.add(
+      {
+        //This is the conditions object
+        isMobile: '(max-width: 767px)',
+        isTablet: '(min-width: 768px)  and (max-width: 991px)',
+        isDesktop: '(min-width: 992px)',
+        reduceMotion: '(prefers-reduced-motion: reduce)',
+      },
+      (gsapContext) => {
+        let { isMobile, isTablet, isDesktop, reduceMotion } = gsapContext.conditions;
+        // Resuable Animations
+        accordion(gsapContext);
+        hoverActive(gsapContext);
+        //Custom Animations
+        focusText();
+        missionText();
+        approachHero();
+        approachCTA();
+        teamModal();
+        navColorScroll();
+        homeInvestmentsSlider();
+        approachTestimonialSlider();
+        portfolioSlider();
+        xSlider();
+        //optional animations
+        if (!reduceMotion) {
+          mouseOver(gsapContext);
+          parallax(gsapContext);
+          scrollIn(gsapContext);
+          scrolling(gsapContext);
+          countUp(gsapContext);
+          //optional desktop only
+          if (isDesktop) {
+            navLinkHover();
+          }
+        }
+      }
+    );
+  };
+  gsapInit();
+
+  const resetScrollTriggers = document.querySelectorAll('[data-ix-reset]');
+  //reset gsap on click of reset triggers
+  resetScrollTriggers.forEach(function (item) {
+    item.addEventListener('click', function (e) {
+      ScrollTrigger.refresh();
+    });
+  });
+});
+
+/*
+OLD TESTIMONIAL SLIDER
+const approachTestimonialSlider = function () {
     //selectors
     const SWIPER = '.testimonials_slider';
     const SWIPER_LIST_WRAP = '.testimonials_list_wrap';
@@ -726,237 +936,4 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   };
 
-  const xSlider = function () {
-    //selectors
-    const SWIPER = '.x_slider';
-    const SWIPER_LIST_WRAP = '.x_slider_list_wrap';
-    const nextButton = '.swiper-next';
-    const previousButton = '.swiper-prev';
-    const bulletsWrapClass = '.swiper-bullet-wrapper';
-    //class options
-    const activeClass = 'is-active';
-    const nextClass = 'is-next';
-    const prevClass = 'is-prev';
-    const afterClass = 'is-after';
-    const beforeClass = 'is-before';
-    const disabledClass = 'is-disabled';
-
-    //Utility function to activate perspective slides
-    const activateSlides = function (swiper) {
-      const activeIndex = swiper.activeIndex;
-      swiper.slides.forEach((slide, index) => {
-        //remove previous and next class
-        slide.classList.remove(beforeClass);
-        slide.classList.remove(afterClass);
-        //check if before or active
-        if (index < activeIndex) {
-          slide.classList.add(beforeClass);
-        }
-        if (index > activeIndex) {
-          slide.classList.add(afterClass);
-        }
-      });
-    };
-
-    //get swipers
-    const swipers = gsap.utils.toArray(SWIPER);
-    swipers.forEach(function (swiper) {
-      if (!swiper) return;
-      const swiperWrap = swiper.querySelector(SWIPER_LIST_WRAP);
-
-      //get navication sliderLists
-      const nextButtonEl = swiper.querySelector(nextButton);
-      const previousButtonEl = swiper.querySelector(previousButton);
-      const bulletWrapEl = swiper.querySelector(bulletsWrapClass);
-
-      // if navigation sliderLists don't exist return
-      if (!nextButtonEl || !previousButtonEl || !swiperWrap) return;
-      const xSwiper = new Swiper(swiperWrap, {
-        modules: [Navigation, Pagination, EffectCreative],
-        slidesPerView: 'auto',
-        speed: 800,
-        centeredSlides: true,
-        loop: true,
-        normalizeSlideIndex: true,
-        loopAdditionalSlides: 1,
-        allowTouchMove: false,
-        effect: 'creative',
-        creativeEffect: {
-          perspective: false,
-          limitProgress: 5,
-          next: {
-            // Array with translate X, Y and Z values
-            translate: ['25%', 0, 0],
-          },
-          prev: {
-            // Array with translate X, Y and Z values
-            translate: ['-25%', 0, 0],
-          },
-        },
-        pagination: {
-          el: bulletWrapEl,
-          bulletActiveClass: activeClass,
-          bulletClass: 'swiper-bullet',
-          bulletElement: 'button',
-          clickable: false,
-        },
-        navigation: {
-          nextEl: nextButtonEl,
-          prevEl: previousButtonEl,
-          disabledClass: disabledClass,
-        },
-        slideActiveClass: activeClass,
-        slideDuplicateActiveClass: activeClass,
-        slideNextClass: nextClass,
-        slidePrevClass: prevClass,
-        on: {
-          afterInit: function (xSwiper) {
-            activateSlides(xSwiper);
-          },
-          slideChangeTransitionStart: function (xSwiper) {
-            activateSlides(xSwiper);
-          },
-        },
-      });
-      let windowWidth = window.innerWidth;
-      window.addEventListener('resize', function () {
-        if (window.innerWidth !== windowWidth) {
-          windowWidth = window.innerWidth;
-          setTimeout(() => {
-            xSwiper.update();
-            activateSlides(xSwiper);
-          }, 1000);
-        }
-      });
-      // let windowWidth = window.innerWidth;
-      // window.addEventListener('resize', function () {
-      //   if (window.innerWidth !== windowWidth) {
-      //     console.log('reload');
-      //     location.reload();
-      //   }
-      //   // gsapInit();
-      // });
-    });
-  };
-
-  // const investmentsHeroSlider = function () {
-  //   const sliderWrap = '.home_investments_slider.swiper';
-  //   const nextButton = '.swiper-next';
-  //   const previousButton = '.swiper-prev';
-  //   const activeClass = 'is-active';
-  //   const nextClass = 'is-next';
-  //   const prevClass = 'is-prev';
-  //   const disabledClass = 'is-disabled';
-  //   const bulletsWrapClass = '.swiper-bullet-wrapper';
-
-  //   gsap.utils.toArray(sliderWrap).forEach(function (slider) {
-  //     if (!slider) return;
-  //     //get navication sliders
-  //     const nextButtonEl = slider.querySelector(nextButton);
-  //     const previousButtonEl = slider.querySelector(previousButton);
-  //     const bulletWrapEl = slider.querySelector(bulletsWrapClass);
-  //     // if navigation sliders don't exist return
-  //     if (!nextButtonEl || !previousButtonEl) return;
-  //     const swiper = new Swiper(slider, {
-  //       modules: [Navigation, Pagination],
-  //       slidesPerView: 1,
-  //       spaceBetween: '5%',
-  //       speed: 600,
-  //       centeredSlides: true,
-  //       loop: true,
-  //       drag: false,
-  //       followFinger: false,
-  //       freeMode: false,
-  //       updateOnMove: true,
-  //       rewind: false,
-  //       effect: 'creative',
-  //       creativeEffect: {
-  //         perspective: true,
-  //         next: {
-  //           // Array with translate X, Y and Z values
-  //           translate: [0, 0, 0],
-  //           // Array with rotate X, Y and Z values (in deg)
-  //           rotate: [0, 24, 0],
-  //           opacity: 0.5,
-  //         },
-  //         prev: {
-  //           // Array with translate X, Y and Z values
-  //           translate: [0, 0, 0],
-  //           // Array with rotate X, Y and Z values (in deg)
-  //           rotate: [0, 24, 0],
-  //           opacity: 0.5,
-  //         },
-  //       },
-  //       pagination: {
-  //         el: bulletWrapEl,
-  //         bulletActiveClass: activeClass,
-  //         bulletClass: 'swiper-bullet',
-  //         bulletElement: 'button',
-  //         clickable: true,
-  //       },
-  //       navigation: {
-  //         nextEl: nextButtonEl,
-  //         prevEl: previousButtonEl,
-  //         disabledClass: disabledClass,
-  //       },
-  //       slideActiveClass: activeClass,
-  //       slideDuplicateActiveClass: activeClass,
-  //       slideNextClass: nextClass,
-  //       slidePrevClass: prevClass,
-  //     });
-  //   });
-  // };
-
-  //////////////////////////////
-  //Control Functions on page load
-  const gsapInit = function () {
-    let mm = gsap.matchMedia();
-    mm.add(
-      {
-        //This is the conditions object
-        isMobile: '(max-width: 767px)',
-        isTablet: '(min-width: 768px)  and (max-width: 991px)',
-        isDesktop: '(min-width: 992px)',
-        reduceMotion: '(prefers-reduced-motion: reduce)',
-      },
-      (gsapContext) => {
-        let { isMobile, isTablet, isDesktop, reduceMotion } = gsapContext.conditions;
-        // Resuable Animations
-        accordion(gsapContext);
-        hoverActive(gsapContext);
-        //Custom Animations
-        focusText();
-        missionText();
-        approachHero();
-        approachCTA();
-        teamModal();
-        navColorScroll();
-        homeInvestmentsSlider();
-        approachTestimonialSlider();
-        portfolioSlider();
-        xSlider();
-        //optional animations
-        if (!reduceMotion) {
-          mouseOver(gsapContext);
-          parallax(gsapContext);
-          scrollIn(gsapContext);
-          scrolling(gsapContext);
-          countUp(gsapContext);
-          //optional desktop only
-          if (isDesktop) {
-            navLinkHover();
-          }
-        }
-      }
-    );
-  };
-  gsapInit();
-
-  const resetScrollTriggers = document.querySelectorAll('[data-ix-reset]');
-  //reset gsap on click of reset triggers
-  resetScrollTriggers.forEach(function (item) {
-    item.addEventListener('click', function (e) {
-      ScrollTrigger.refresh();
-    });
-  });
-});
+*/
