@@ -7452,13 +7452,14 @@
           slidesPerView: 1,
           loop: true,
           speed: DURATION_MS,
+          centeredSlides: true,
           normalizeSlideIndex: true,
           allowTouchMove: false,
           autoplay: { delay: 3e3 },
           effect: "creative",
           creativeEffect: {
             perspective: false,
-            limitProgress: 10,
+            limitProgress: 1,
             next: {
               translate: ["12vw", 0, 0]
             },
