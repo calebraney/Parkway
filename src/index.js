@@ -495,30 +495,25 @@ document.addEventListener('DOMContentLoaded', function () {
       const imageSwiper = new Swiper(imageSwiperWrap, {
         modules: [Navigation, EffectCreative],
         slidesPerView: 'auto',
-        // spaceBetween: '-5%',
         speed: 800,
         centeredSlides: true,
         loop: true,
         normalizeSlideIndex: true,
-        // initialSlide: 0,
-        // loopAdditionalSlides: 5,
+        loopAdditionalSlides: 5,
         allowTouchMove: false,
         followFinger: false,
         freeMode: false,
-        updateOnMove: false,
-        draggable: false,
-        rewind: false,
         effect: 'creative',
         creativeEffect: {
           perspective: false,
           limitProgress: 10,
           next: {
             // Array with translate X, Y and Z values
-            translate: ['75%', 0, 0],
+            translate: ['50%', 0, 0],
           },
           prev: {
             // Array with translate X, Y and Z values
-            translate: ['-75%', 0, 0],
+            translate: ['-50%', 0, 0],
           },
         },
         navigation: {

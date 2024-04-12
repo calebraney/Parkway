@@ -7350,21 +7350,19 @@
           centeredSlides: true,
           loop: true,
           normalizeSlideIndex: true,
+          loopAdditionalSlides: 5,
           allowTouchMove: false,
           followFinger: false,
           freeMode: false,
-          updateOnMove: false,
-          draggable: false,
-          rewind: false,
           effect: "creative",
           creativeEffect: {
             perspective: false,
             limitProgress: 10,
             next: {
-              translate: ["75%", 0, 0]
+              translate: ["50%", 0, 0]
             },
             prev: {
-              translate: ["-75%", 0, 0]
+              translate: ["-50%", 0, 0]
             }
           },
           navigation: {
