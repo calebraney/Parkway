@@ -93,6 +93,20 @@ export const scrollIn = function (gsapContext) {
     });
   };
 
+  const scrollInSubheading = function (item) {
+    //split the text
+    const splitText = runSplit(item);
+    if (!splitText) return;
+    //set heading to full opacity (check to see if needed)
+    // item.style.opacity = 1;
+    const tl = scrollInTL(item);
+    const tween = defaultTween(splitText.lines, tl, { stagger: true, skew: 'large' });
+    //add event calleback to revert text on completion
+    tl.eventCallback('onComplete', () => {
+      splitText.revert();
+    });
+  };
+
   const scrollInItem = function (item) {
     if (!item) return;
     const tl = scrollInTL(item);
@@ -195,8 +209,11 @@ export const scrollIn = function (gsapContext) {
     children.forEach((child) => {
       const childTag = child.tagName;
       //apply the items animation based on the child type
-      if (['H1', 'H2', 'H3', 'H4', 'H5', 'H6'].includes(childTag)) {
+      if (['H1', 'H2'].includes(childTag)) {
         scrollInHeading(child);
+      }
+      if (['H3', 'H4', 'H5', 'H6'].includes(childTag)) {
+        scrollInSubheading(child);
       }
       if (childTag === 'FIGURE') {
         scrollInImage(child);

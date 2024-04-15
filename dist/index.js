@@ -1244,6 +1244,16 @@
         splitText.revert();
       });
     };
+    const scrollInSubheading = function(item) {
+      const splitText = runSplit(item);
+      if (!splitText)
+        return;
+      const tl = scrollInTL(item);
+      const tween = defaultTween(splitText.lines, tl, { stagger: true, skew: "large" });
+      tl.eventCallback("onComplete", () => {
+        splitText.revert();
+      });
+    };
     const scrollInItem = function(item) {
       if (!item)
         return;
@@ -1335,8 +1345,11 @@
         return;
       children.forEach((child) => {
         const childTag = child.tagName;
-        if (["H1", "H2", "H3", "H4", "H5", "H6"].includes(childTag)) {
+        if (["H1", "H2"].includes(childTag)) {
           scrollInHeading(child);
+        }
+        if (["H3", "H4", "H5", "H6"].includes(childTag)) {
+          scrollInSubheading(child);
         }
         if (childTag === "FIGURE") {
           scrollInImage(child);
