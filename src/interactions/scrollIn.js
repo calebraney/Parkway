@@ -7,6 +7,7 @@ export const scrollIn = function (gsapContext) {
   const SCROLLIN_ELEMENT = 'data-ix-scrollin';
   // types of scrolling elements (value for scrollin element attribute)
   const SCROLLIN_HEADING = 'heading';
+  const SCROLLIN_SUBHEADING = 'subheading';
   const SCROLLIN_ITEM = 'item';
   const SCROLLIN_CONTAINER = 'container';
   const SCROLLIN_STAGGER = 'stagger';
@@ -234,6 +235,9 @@ export const scrollIn = function (gsapContext) {
     const scrollInType = item.getAttribute(SCROLLIN_ELEMENT);
     if (scrollInType === SCROLLIN_HEADING) {
       scrollInHeading(item);
+    }
+    if (scrollInType === SCROLLIN_SUBHEADING) {
+      scrollInSubheading(item);
     }
     if (scrollInType === SCROLLIN_ITEM) {
       scrollInItem(item);
