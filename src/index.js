@@ -407,6 +407,48 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   };
 
+  const checkFilterDropdowns = function () {
+    const DROPDOWN = '[data-ix-filter="dropdown"]';
+    const FILTER_TEXT = '[data-ix-filter="active-text"]';
+    const CHECKBOX = '[data-ix-filter="checkbox"]';
+    const ACTIVE_CLASS = 'is-active';
+
+    //get dropdowns
+    const dropdowns = gsap.utils.toArray(DROPDOWN);
+
+    if (dropdowns.length === 0) return;
+    dropdowns.forEach((dropdown, index) => {
+      const filterText = dropdown.querySelector(FILTER_TEXT);
+      const checkboxes = dropdown.querySelectorAll(CHECKBOX);
+      if (!filterText || checkboxes.length === 0) return;
+      let activeCheckboxes = false;
+
+      const checkForActiveCheckboxes = function () {
+        //check to see if any of the checkboxes are checked
+        const activeCheckboxes = Array.from(checkboxes).filter(function (checkbox) {
+          return checkbox.checked;
+        });
+        //if there are active checkboxes set text to active and update content
+        if (activeCheckboxes.length > 0) {
+          filterText.classList.add(ACTIVE_CLASS);
+          filterText.textContent = `(${activeCheckboxes.length})`;
+        } else {
+          filterText.classList.remove(ACTIVE_CLASS);
+          filterText.textContent = '';
+        }
+      };
+
+      //run initial check
+      checkForActiveCheckboxes();
+      //check on checkbox change
+      checkboxes.forEach((checkbox, index) => {
+        checkbox.addEventListener('change', function () {
+          checkForActiveCheckboxes();
+        });
+      });
+    });
+  };
+
   //////////////////////////////
   //swiper
 
@@ -541,86 +583,135 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const portfolioSlider = function () {
     //selectors
-    const SWIPER = '.portfolio_slider_layout';
-    const SWIPER_LIST_WRAP = '.portfolio_slider_list_wrap';
-    const HEADING_ITEM = '.portfolio_heading_item';
-    const SUBHEADING_ITEM = '.portfolio_sub_item';
+    const SLIDER_WRAP = '[data-ix-portfolioslider="wrap"]';
+    const SLIDE = '[data-ix-portfolioslider="slide"]';
+    const HEADING_ITEM = '[data-ix-portfolioslider="heading"]';
+    const SUBHEADING_ITEM = '[data-ix-portfolioslider="subheading"]';
+    const TIMER_LINE = '[data-ix-portfolioslider="line"]';
     //animation options
-    const DURATION = 0.8;
-    const DURATION_MS = DURATION * 1000;
+    const OPTION_TIMER_DURATION = 'data-ix-portfolioslider-duration';
+    const TIMER_DURATION = 5;
 
-    //Utility function to activate perspective slides
-    const clickListener = function (swiper, headings, subHeadings) {
+    const sliders = gsap.utils.toArray(SLIDER_WRAP);
+    sliders.forEach((slider) => {
+      const slides = slider.querySelectorAll(SLIDE);
+      const headings = slider.querySelectorAll(HEADING_ITEM);
+      const subHeadings = slider.querySelectorAll(SUBHEADING_ITEM);
+      const timerLine = slider.querySelector(TIMER_LINE);
+      //get slider duration from attribute or set it to the default
+      const timerDuration = attr(TIMER_DURATION, slider.getAttribute(OPTION_TIMER_DURATION));
+      if (slides.length === 0 || headings.length === 0 || subHeadings.length === 0 || !timerLine)
+        return;
+
+      //set timer variable
+      let timer;
+      clearInterval(timer);
+
+      //timer
+      const startTimer = function () {
+        let time = timerDuration - 1;
+        // start gsap animation
+        gsap.fromTo(
+          timerLine,
+          {
+            width: '0%',
+          },
+          {
+            width: '100%',
+            duration: time,
+            ease: 'none',
+          }
+        );
+        //create interval timer
+        timer = setInterval(function () {
+          //decrease the time by one second
+          time--;
+          //if timer is complete change slides
+          if (time === 0) {
+            nextSlide();
+          }
+        }, 1000);
+      };
+
+      //Utility function to activate perspective slides
+      const activateSlides = function (activeIndex) {
+        //remove before and after classes
+        slides.forEach((slide, index) => {
+          slide.classList.remove(activeClass);
+          slide.classList.remove(beforeClass);
+          slide.classList.remove(afterClass);
+          //check if before or active
+          if (index === activeIndex) {
+            slide.classList.add(activeClass);
+          }
+          if (index < activeIndex) {
+            slide.classList.add(beforeClass);
+          }
+          if (index > activeIndex) {
+            slide.classList.add(afterClass);
+          }
+        });
+        headings.forEach((heading, index) => {
+          if (index === activeIndex) {
+            heading.classList.add(activeClass);
+          } else {
+            heading.classList.remove(activeClass);
+          }
+        });
+        subHeadings.forEach((sub, index) => {
+          if (index === activeIndex) {
+            sub.classList.add(activeClass);
+          } else {
+            sub.classList.remove(activeClass);
+          }
+        });
+      };
+      const nextSlide = function (nextIndex = undefined) {
+        if (nextIndex === undefined) {
+          nextIndex = findNextIndex();
+        }
+        activateSlides(nextIndex);
+        clearInterval(timer);
+        startTimer();
+      };
+      nextSlide(0);
+
+      //utility function to find the next slide in the loop
+      const findNextIndex = function () {
+        let currentIndex;
+        headings.forEach((heading, index) => {
+          if (heading.classList.contains(activeClass)) {
+            currentIndex = index;
+          }
+        });
+        //if current item is the last item set active index to the first item
+        if (currentIndex === headings.length - 1) {
+          return 0;
+        } else {
+          //otherwize set active index to the next item
+          return currentIndex + 1;
+        }
+      };
+
+      // Utility function to activate perspective slides
       headings.forEach((heading, index) => {
         heading.addEventListener('click', (event) => {
-          swiper.slideToLoop(index, DURATION_MS, true);
+          nextSlide(index);
         });
       });
-    };
-    const updateText = function (headings, subHeadings, activeIndex) {
-      headings.forEach((item, index) => {
-        if (index === activeIndex) {
-          item.classList.add(activeClass);
-        } else {
-          item.classList.remove(activeClass);
+
+      //restart timer on resize
+      let windowWidth = window.innerWidth;
+      window.addEventListener('resize', function () {
+        if (window.innerWidth !== windowWidth) {
+          windowWidth = window.innerWidth;
+          headings.forEach((heading, index) => {
+            if (heading.classList.contains(activeClass)) {
+              nextSlide(index);
+            }
+          });
         }
       });
-      subHeadings.forEach((item, index) => {
-        if (index === activeIndex) {
-          item.classList.add(activeClass);
-        } else {
-          item.classList.remove(activeClass);
-        }
-      });
-    };
-
-    //get swipers
-    const swipers = gsap.utils.toArray(SWIPER);
-    swipers.forEach(function (swiper) {
-      if (!swiper) return;
-      const imageSwiperWrap = swiper.querySelector(SWIPER_LIST_WRAP);
-      const headings = swiper.querySelectorAll(HEADING_ITEM);
-      const subHeadings = swiper.querySelectorAll(SUBHEADING_ITEM);
-
-      if (!imageSwiperWrap) return;
-      const imageSwiper = new Swiper(imageSwiperWrap, {
-        modules: [Autoplay, EffectCreative],
-        slidesPerView: 1,
-        loop: true,
-        speed: DURATION_MS,
-        centeredSlides: true,
-        normalizeSlideIndex: true,
-        allowTouchMove: false,
-        autoplay: { delay: 3000 },
-        effect: 'creative',
-        creativeEffect: {
-          perspective: false,
-          limitProgress: 1,
-          next: {
-            translate: ['12vw', 0, 0],
-          },
-          prev: {
-            translate: ['-12vw', 0, 0],
-          },
-        },
-        slideActiveClass: activeClass,
-        slideDuplicateActiveClass: activeClass,
-        slideNextClass: nextClass,
-        slidePrevClass: prevClass,
-        on: {
-          afterInit: function (imageSwiper) {
-            activateSlides(imageSwiper);
-            updateText(headings, subHeadings, imageSwiper.activeIndex);
-          },
-          slideChangeTransitionStart: function (imageSwiper) {
-            activateSlides(imageSwiper);
-            updateText(headings, subHeadings, imageSwiper.activeIndex);
-          },
-        },
-      });
-      // imageSwiper.start();
-
-      clickListener(imageSwiper, headings, subHeadings);
     });
   };
 
@@ -805,6 +896,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   //////////////////////////////
   //Control Functions on page load
+  portfolioSlider();
+  //init most functions
   const gsapInit = function () {
     let mm = gsap.matchMedia();
     mm.add(
@@ -829,8 +922,8 @@ document.addEventListener('DOMContentLoaded', function () {
         navColorScroll();
         homeInvestmentsSlider();
         approachTestimonialSlider();
-        portfolioSlider();
         xSlider();
+        checkFilterDropdowns();
         //optional animations
         if (!reduceMotion) {
           mouseOver(gsapContext);
