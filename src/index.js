@@ -213,7 +213,7 @@ document.addEventListener('DOMContentLoaded', function () {
       scrollTrigger: {
         trigger: wrap,
         start: 'top 80%',
-        end: 'bottom 90%',
+        end: 'center center',
         scrub: 1,
       },
     });
@@ -556,6 +556,18 @@ document.addEventListener('DOMContentLoaded', function () {
           prev: {
             // Array with translate X, Y and Z values
             translate: ['-50%', 0, 0],
+          },
+        },
+        breakpoints: {
+          // MOBILE when window width is >= 320px
+          320: {
+            allowTouchMove: true,
+            longSwipes: false,
+          },
+          // DESKTOP - when window width is >= 768px
+          768: {
+            allowTouchMove: false,
+            longSwipes: false,
           },
         },
         navigation: {
