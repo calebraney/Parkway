@@ -558,18 +558,17 @@ document.addEventListener('DOMContentLoaded', function () {
             translate: ['-50%', 0, 0],
           },
         },
-        breakpoints: {
-          // MOBILE when window width is >= 320px
-          320: {
-            allowTouchMove: true,
-            longSwipes: false,
-          },
-          // DESKTOP - when window width is >= 768px
-          768: {
-            allowTouchMove: false,
-            longSwipes: false,
-          },
-        },
+        // breakpoints: {
+        //   // MOBILE when window width is >= 320px
+        //   320: {
+        //     simulateTouch: true,
+        //     allowTouchMove: true,
+        //   },
+        //   // DESKTOP - when window width is >= 768px
+        //   768: {
+        //     allowTouchMove: false,
+        //   },
+        // },
         navigation: {
           nextEl: nextButtonEl,
           prevEl: previousButtonEl,
