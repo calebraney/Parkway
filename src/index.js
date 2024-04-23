@@ -294,6 +294,7 @@ document.addEventListener('DOMContentLoaded', function () {
       tl.set(modal, { display: 'block' });
       tl.fromTo(layout, { xPercent: 100 }, { xPercent: 0 });
       tl.fromTo(overlay, { opacity: 0 }, { opacity: 1 }, '<');
+      tl.fromTo(closeBtn, { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.3 });
       return tl;
     };
 
