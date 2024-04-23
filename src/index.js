@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const navColorScroll = function () {
     //Elements
-    const NAV = '[data-ix-navcolor="nav"]';
+    const NAV = '[data-ix-navcolor="true"]';
     const PAGE_WRAP = '.page_wrap';
     const NAV_DISTANCE = '36'; //in rems
 
@@ -92,6 +92,35 @@ document.addEventListener('DOMContentLoaded', function () {
       sectionTheme = getTheme(section);
       applyTheme(section, sectionTheme);
     });
+  };
+
+  const navFadeScroll = function () {
+    //elements
+    const NAV = '[data-ix-navfade="true"]';
+    //classes
+    const HIDDEN_CLASS = 'is-hidden';
+
+    const nav = document.querySelector(NAV);
+    if (!nav) return;
+
+    //variable to check last scroll distance
+    let lastScrollTop = 0;
+
+    function scrollDirectionListener() {
+      //check the current scroll distance from the top
+      let currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      //compare current scroll distance to last scroll distance
+      if (currentScrollTop > lastScrollTop) {
+        //user is scrolling down
+        nav.classList.add(HIDDEN_CLASS);
+      } else {
+        //user is scrolling up
+        nav.classList.remove(HIDDEN_CLASS);
+      }
+      // For Mobile or negative scrolling
+      lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop;
+    }
+    window.addEventListener('scroll', scrollDirectionListener);
   };
 
   const navLinkHover = function () {
@@ -184,7 +213,7 @@ document.addEventListener('DOMContentLoaded', function () {
     activateItems(0);
     // listen for click events to activate items
     textLinks.forEach((textItem, textIndex) => {
-      textItem.addEventListener('click', (event) => {
+      textItem.addEventListener('mouseenter', (event) => {
         activateItems(textIndex);
       });
     });
@@ -931,6 +960,7 @@ document.addEventListener('DOMContentLoaded', function () {
         approachCTA();
         teamModal();
         navColorScroll();
+        navFadeScroll();
         homeInvestmentsSlider();
         approachTestimonialSlider();
         xSlider();
