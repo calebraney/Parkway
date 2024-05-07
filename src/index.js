@@ -644,15 +644,16 @@ document.addEventListener('DOMContentLoaded', function () {
       if (slides.length === 0 || headings.length === 0 || subHeadings.length === 0 || !timerLine)
         return;
 
-      //set timer variable
+      //set timer and gsap timeline variable
       let timer;
+      let tl = gsap.timeline({});
       clearInterval(timer);
 
       //timer
-      const startTimer = function () {
+      const startTimer = function (tl) {
         let time = timerDuration - 1;
         // start gsap animation
-        gsap.fromTo(
+        tl.fromTo(
           timerLine,
           {
             width: '0%',
@@ -707,13 +708,26 @@ document.addEventListener('DOMContentLoaded', function () {
           }
         });
       };
-      const nextSlide = function (nextIndex = undefined) {
+      const nextSlide = function (nextIndex = undefined, resetTimer = true) {
+        //if the next slide is not specified just find the next slide
         if (nextIndex === undefined) {
           nextIndex = findNextIndex();
         }
+        //activate the slide
         activateSlides(nextIndex);
+        //clear the timer
         clearInterval(timer);
-        startTimer();
+        // if the timer is set to reset restart the timer otherwise fade it out
+        if (resetTimer) {
+          startTimer(tl);
+        } else {
+          tl.kill();
+          gsap.to(timerLine, {
+            opacity: 0,
+            duration: 0.4,
+            ease: 'power1.out',
+          });
+        }
       };
       nextSlide(0);
 
@@ -737,7 +751,7 @@ document.addEventListener('DOMContentLoaded', function () {
       // Utility function to activate perspective slides
       headings.forEach((heading, index) => {
         heading.addEventListener('click', (event) => {
-          nextSlide(index);
+          nextSlide(index, false);
         });
       });
 
